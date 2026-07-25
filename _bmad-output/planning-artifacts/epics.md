@@ -33,12 +33,22 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 - **FR-14:** Support two humans alternating on the same computer.
 - **FR-15:** Start a game from the main menu with mode and difficulty selection.
 - **FR-16:** Quit an in-progress game only after confirmation.
+- **FR-17:** Provide a static site entry point that GitHub Pages can publish without a server-side runtime.
+- **FR-18:** Link the repository README to the published GitHub Pages site.
+- **FR-19:** Explain that Strategic Reserve supports both an HTML edition and a Python/Tkinter edition.
+- **FR-20:** Provide an HTML game shell that can host browser-native gameplay.
+- **FR-21:** Implement the official board, dice, capture, placement, reserve, and victory rules in the HTML edition.
+- **FR-22:** Support local two-player play in the HTML edition.
+- **FR-23:** Provide browser-based AI play corresponding to the Python edition's difficulty choices.
+- **FR-24:** Keep the HTML edition deployable without server-side dependencies.
 
 ### Non-Functional Requirements
 
 - **NFR-1:** Advanced AI decisions complete within five seconds.
 - **NFR-2:** AI does not crash or hang on any valid board state.
 - **NFR-3:** Rudimentary AI decisions complete within one second.
+- **NFR-4:** The published site works from the GitHub Pages project subpath and uses only static assets.
+- **NFR-5:** The HTML edition is responsive and keyboard-accessible on supported desktop and mobile browsers.
 
 ### Additional Requirements
 
@@ -50,6 +60,8 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 - Reject domain violations with explicit errors such as `IllegalMoveError` and `InvalidGameStateError`.
 - Follow snake_case functions/modules, PascalCase classes, and UPPER_CASE constants.
 - Add automated unit tests around deterministic game-engine and AI behavior.
+- Preserve the Python/Tkinter edition while adding an independently deployable HTML edition.
+- Publish the static site from a GitHub Actions Pages workflow and avoid assumptions that the site is hosted at the domain root.
 
 ### UX Design Requirements
 
@@ -70,30 +82,102 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 
 | Requirement | Epic | Stories |
 |---|---|---|
-| FR-1, FR-4 | Epic 1 | 1.2, 1.4 |
-| FR-5, FR-6 | Epic 1 | 1.2, 1.3 |
-| FR-7, FR-8, FR-9 | Epic 2 | 2.1, 2.2, 2.3 |
-| FR-2, FR-3 | Epic 3 | 3.2, 3.3 |
-| FR-10 | Epic 3 | 3.4 |
-| FR-14, FR-15, FR-16 | Epic 3 | 3.1, 3.5 |
-| FR-11, FR-12 | Epic 4 | 4.1, 4.2 |
-| FR-13 | Epic 4 | 4.3 |
-| NFR-1, NFR-2, NFR-3 | Epic 4 | 4.1, 4.2, 4.4 |
-| UX-DR1–UX-DR12 | Epics 3 and 5 | 3.1–3.5, 5.1–5.3 |
+| FR-17, FR-18, FR-19 | Epic 1 | 1.1 |
+| FR-20 | Epic 1 | 1.2 |
+| FR-21, FR-22 | Epic 1 | 1.3 |
+| FR-23 | Epic 1 | 1.4 |
+| FR-24, NFR-4, NFR-5 | Epic 1 | 1.1–1.5 |
+| FR-1, FR-4 | Epic 2 | 2.2, 2.4 |
+| FR-5, FR-6 | Epic 2 | 2.2, 2.3 |
+| FR-7, FR-8, FR-9 | Epic 3 | 3.1, 3.2, 3.3 |
+| FR-2, FR-3 | Epic 4 | 4.2, 4.3 |
+| FR-10 | Epic 4 | 4.4 |
+| FR-14, FR-15, FR-16 | Epic 4 | 4.1, 4.5 |
+| FR-11, FR-12 | Epic 5 | 5.1, 5.2 |
+| FR-13 | Epic 5 | 5.3 |
+| NFR-1, NFR-2, NFR-3 | Epic 5 | 5.1, 5.2, 5.4 |
+| UX-DR1–UX-DR12 | Epics 1, 4, and 6 | 1.2–1.5, 4.1–4.5, 6.1–6.3 |
 
 ## Epic List
 
-1. **Playable Rules Foundation** — establish a tested state model, board groups, turns, dice, and reserves.
-2. **Complete Capture and Placement Rules** — make every roll outcome resolve according to the official rules.
-3. **Local Desktop Game** — deliver a complete, visible two-player game loop.
-4. **Computer Opponents** — add safe rudimentary and advanced AI play.
-5. **Accessible Release Experience** — complete keyboard, assistive, visual, and release-quality validation.
+1. **Browser-Accessible Strategic Reserve** — publish the project through GitHub Pages and deliver the HTML edition first, without waiting for the Python edition.
+2. **Playable Python Rules Foundation** — establish a tested Python state model, board groups, turns, dice, and reserves in parallel with or after the browser edition.
+3. **Complete Python Capture and Placement Rules** — make every roll outcome resolve according to the official rules.
+4. **Local Desktop Game** — deliver a complete, visible two-player Python game loop.
+5. **Computer Opponents** — add safe rudimentary and advanced Python AI play.
+6. **Accessible Desktop Release Experience** — complete keyboard, assistive, visual, and release-quality validation for the Python edition.
 
-## Epic 1: Playable Rules Foundation
+## Epic 1: Browser-Accessible Strategic Reserve
+
+Visitors can discover Strategic Reserve through GitHub Pages and play a complete, accessible HTML edition before or independently of the Python desktop release.
+
+### Story 1.1: Publish the Project Site
+
+As a visitor, I want a reliable project page and a direct link from the repository, so that I can find and open Strategic Reserve in a browser.
+
+**Acceptance Criteria:**
+
+**Given** the repository's default branch, **when** the Pages deployment workflow completes, **then** it publishes a static entry point using only repository-hosted assets and no server-side runtime.
+
+**Given** the site is hosted below a GitHub Pages project path, **when** any published page or asset is requested, **then** its URL resolves without assuming domain-root hosting.
+
+**Given** a visitor reads the README, **when** they look for a playable version, **then** a prominent link opens the published site and the README distinguishes the HTML and Python/Tkinter editions.
+
+### Story 1.2: Explore the Browser Game Shell
+
+As a browser player, I want a responsive game shell, so that I can understand the game and its available modes on desktop or mobile.
+
+**Acceptance Criteria:**
+
+**Given** the published entry point, **when** it loads at a supported viewport, **then** it presents the game title, mode and difficulty controls, New Game, the 6×6 board region, dice region, reserve counters, status text, and project attribution.
+
+**Given** keyboard-only navigation, **when** the player uses Tab, Shift+Tab, arrow keys, Enter, Space, or Escape, **then** focus is visible, follows a logical order, and every available shell control has pointer-equivalent operation.
+
+**Given** CSS or JavaScript assets fail to load, **when** the document renders, **then** meaningful title, edition status, and repository navigation remain available as HTML content.
+
+### Story 1.3: Play a Complete Local Browser Game
+
+As two local players, I want the HTML edition to enforce the official rules, so that we can finish a valid game entirely in the browser.
+
+**Acceptance Criteria:**
+
+**Given** a new browser game, **when** play begins, **then** the official initial board, reserves, starting player, and two fair six-sided dice are represented in browser-owned state.
+
+**Given** any empty, friendly-group, or enemy-group target, **when** a roll resolves, **then** group discovery, captures, legal placements, reserve updates, and turn advancement match FR-5 through FR-9 without a network request.
+
+**Given** legal destinations and the rolled target, **when** they render, **then** they use distinct accessible labels and the specified legal, target, hover, and focus treatments without relying on color alone.
+
+**Given** a player places their final reserve checker, **when** the placement completes, **then** the winner is announced immediately, further board input is disabled, and a New Game action is available.
+
+### Story 1.4: Play Against Browser AI
+
+As a solo browser player, I want selectable computer opponents, so that I can practice at an appropriate difficulty without installing Python.
+
+**Acceptance Criteria:**
+
+**Given** player-versus-computer mode, **when** rudimentary difficulty is selected, **then** the AI chooses a legal move randomly and completes within one second under documented test conditions.
+
+**Given** advanced difficulty, **when** the AI selects a move, **then** it considers all 36 next-roll outcomes, returns a best-so-far legal move within five seconds, and does not freeze browser input indefinitely.
+
+**Given** any valid sparse, full, capture-heavy, no-move, or near-win state, **when** either browser AI acts, **then** it returns a legal move or no move without corrupting game state.
+
+### Story 1.5: Validate the Static Browser Release
+
+As a browser player, I want a stable and accessible published game, so that I can play from common devices without installation.
+
+**Acceptance Criteria:**
+
+**Given** the production Pages artifact, **when** automated checks load it from a non-root base path, **then** internal navigation and all required HTML, CSS, JavaScript, and media assets succeed without server rewrites.
+
+**Given** supported desktop and mobile browser sizes, **when** a full PvP game and both PvC difficulties are exercised, **then** setup, roll, capture, placement, win, restart, and responsive layout complete with no critical defect.
+
+**Given** an accessibility audit and keyboard playthrough, **when** menus, board states, status changes, and dialogs are evaluated, **then** semantic names, announcements, keyboard parity, focus visibility, and WCAG AA contrast meet the UX contract.
+
+## Epic 2: Playable Python Rules Foundation
 
 Players can create a valid game, roll dice, inspect groups, and place pieces through a deterministic engine API.
 
-### Story 1.1: Establish the Layered Application Skeleton
+### Story 2.1: Establish the Layered Application Skeleton
 
 As a developer, I want enforceable package boundaries and test tooling, so that gameplay features grow on a reliable foundation.
 
@@ -103,7 +187,7 @@ As a developer, I want enforceable package boundaries and test tooling, so that 
 
 **Given** package dependency checks, **when** imports are inspected, **then** the engine imports neither AI nor UI and AI imports no UI code.
 
-### Story 1.2: Create and Validate a Game State
+### Story 2.2: Create and Validate a Game State
 
 As a player, I want every new game to begin in the official position, so that play starts fairly.
 
@@ -113,7 +197,7 @@ As a player, I want every new game to begin in the official position, so that pl
 
 **Given** malformed dimensions, colors, counts, or coordinates, **when** state validation runs, **then** `InvalidGameStateError` is raised without mutating state.
 
-### Story 1.3: Discover Orthogonal Groups
+### Story 2.3: Discover Orthogonal Groups
 
 As a player, I want connected checker groups identified accurately, so that captures follow the rules.
 
@@ -123,7 +207,7 @@ As a player, I want connected checker groups identified accurately, so that capt
 
 **Given** pieces touching only diagonally, **when** groups are discovered, **then** they remain separate groups.
 
-### Story 1.4: Roll Dice and Place a Reserve Checker
+### Story 2.4: Roll Dice and Place a Reserve Checker
 
 As a player, I want a roll and placement to update one authoritative state, so that turns can progress consistently.
 
@@ -135,11 +219,11 @@ As a player, I want a roll and placement to update one authoritative state, so t
 
 **Given** an illegal destination or empty reserve, **when** placement is attempted, **then** `IllegalMoveError` is raised and state remains unchanged.
 
-## Epic 2: Complete Capture and Placement Rules
+## Epic 3: Complete Python Capture and Placement Rules
 
 Players can resolve enemy, friendly, and empty targets with correct captures and legal destinations.
 
-### Story 2.1: Resolve an Enemy-Group Hit
+### Story 3.1: Resolve an Enemy-Group Hit
 
 As a player, I want a rolled enemy group removed, so that the enemy-hit rule changes board control correctly.
 
@@ -149,7 +233,7 @@ As a player, I want a rolled enemy group removed, so that the enemy-hit rule cha
 
 **Given** the capture resolves, **when** legal moves are requested, **then** every empty square is offered and occupied squares are excluded.
 
-### Story 2.2: Resolve a Friendly-Group Hit
+### Story 3.2: Resolve a Friendly-Group Hit
 
 As a player, I want adjacent enemy groups captured and placement constrained, so that friendly hits follow the tactical rule.
 
@@ -161,7 +245,7 @@ As a player, I want adjacent enemy groups captured and placement constrained, so
 
 **Given** no adjacent empty square, **when** resolution completes, **then** the engine exposes no placement and advances according to the documented no-move rule without hanging.
 
-### Story 2.3: Resolve an Empty-Square Hit
+### Story 3.3: Resolve an Empty-Square Hit
 
 As a player, I want an empty target to allow free placement, so that I can choose any available square.
 
@@ -171,7 +255,7 @@ As a player, I want an empty target to allow free placement, so that I can choos
 
 **Given** any returned destination, **when** placement occurs, **then** no checker is captured and normal reserve and turn updates apply.
 
-### Story 2.4: Preserve Rule Invariants Across Full Turns
+### Story 3.4: Preserve Rule Invariants Across Full Turns
 
 As a player, I want every full turn to remain valid, so that long games cannot corrupt themselves.
 
@@ -181,11 +265,11 @@ As a player, I want every full turn to remain valid, so that long games cannot c
 
 **Given** a failed action, **when** state is compared before and after, **then** no partial capture, placement, or turn transition remains.
 
-## Epic 3: Local Desktop Game
+## Epic 4: Local Desktop Game
 
 Two people can start, play, finish, restart, and safely quit a complete game on one desktop.
 
-### Story 3.1: Start a Configured Local Game
+### Story 4.1: Start a Configured Local Game
 
 As a player, I want to choose local multiplayer and start a game, so that two people can play on one machine.
 
@@ -195,7 +279,7 @@ As a player, I want to choose local multiplayer and start a game, so that two pe
 
 **Given** PvP is selected, **when** New Game is activated, **then** a correctly initialized board replaces the menu and the current player is announced.
 
-### Story 3.2: See the Board, Dice, and Reserves
+### Story 4.2: See the Board, Dice, and Reserves
 
 As a player, I want the complete state rendered clearly, so that I can understand the game at a glance.
 
@@ -205,7 +289,7 @@ As a player, I want the complete state rendered clearly, so that I can understan
 
 **Given** a roll, **when** dice animation completes, **then** the purple column and green row values remain visible and their target has a gold treatment.
 
-### Story 3.3: Select Only a Legal Move
+### Story 4.3: Select Only a Legal Move
 
 As a player, I want legal destinations highlighted and clickable, so that I can complete a valid turn without memorizing constraints.
 
@@ -217,7 +301,7 @@ As a player, I want legal destinations highlighted and clickable, so that I can 
 
 **Given** an illegal or stale square, **when** it is activated, **then** no state changes and concise feedback is presented.
 
-### Story 3.4: Finish and Restart a Game
+### Story 4.4: Finish and Restart a Game
 
 As a player, I want an immediate winner announcement and restart action, so that a completed game has a clear conclusion.
 
@@ -227,7 +311,7 @@ As a player, I want an immediate winner announcement and restart action, so that
 
 **Given** the centered game-over view, **when** New Game is activated, **then** the user returns to a fresh configured game flow with no prior state retained.
 
-### Story 3.5: Confirm Quitting an Active Game
+### Story 4.5: Confirm Quitting an Active Game
 
 As a player, I want accidental quitting prevented, so that I do not lose a game unintentionally.
 
@@ -237,11 +321,11 @@ As a player, I want accidental quitting prevented, so that I do not lose a game 
 
 **Given** the confirmation, **when** No or Escape is selected, **then** play resumes unchanged; **when** Yes is selected, **then** the application exits cleanly.
 
-## Epic 4: Computer Opponents
+## Epic 5: Computer Opponents
 
 A solo player can choose between fast random play and bounded strategic play without compromising engine integrity.
 
-### Story 4.1: Play Against a Rudimentary AI
+### Story 5.1: Play Against a Rudimentary AI
 
 As a solo player, I want a quick random opponent, so that I can practice casually.
 
@@ -251,7 +335,7 @@ As a solo player, I want a quick random opponent, so that I can practice casuall
 
 **Given** no legal move, **when** it runs, **then** it returns `None` without crashing or hanging.
 
-### Story 4.2: Play Against an Advanced AI
+### Story 5.2: Play Against an Advanced AI
 
 As a solo player, I want a strategic opponent, so that practice remains challenging.
 
@@ -261,7 +345,7 @@ As a solo player, I want a strategic opponent, so that practice remains challeng
 
 **Given** a configured search budget, **when** the position is complex, **then** a best-so-far legal move returns within five seconds.
 
-### Story 4.3: Configure and Run a PvC Game
+### Story 5.3: Configure and Run a PvC Game
 
 As a solo player, I want to choose AI difficulty, so that opponent strength matches my preference.
 
@@ -271,7 +355,7 @@ As a solo player, I want to choose AI difficulty, so that opponent strength matc
 
 **Given** an AI turn, **when** its move completes, **then** the same roll, capture, placement, render, and win rules used for humans apply and human input cannot race the AI.
 
-### Story 4.4: Verify AI Safety and Performance
+### Story 5.4: Verify AI Safety and Performance
 
 As a player, I want dependable AI turns, so that unusual positions cannot freeze or corrupt my game.
 
@@ -281,11 +365,11 @@ As a player, I want dependable AI turns, so that unusual positions cannot freeze
 
 **Given** timed performance tests, **when** each difficulty runs under documented conditions, **then** rudimentary remains below one second and advanced remains below five seconds.
 
-## Epic 5: Accessible Release Experience
+## Epic 6: Accessible Desktop Release Experience
 
 Keyboard and assistive-technology users can complete every journey, and the packaged application meets the visual and quality contract.
 
-### Story 5.1: Play the Board Entirely by Keyboard
+### Story 6.1: Play the Board Entirely by Keyboard
 
 As a keyboard user, I want parity with pointer interaction, so that I can complete a game without a mouse.
 
@@ -297,7 +381,7 @@ As a keyboard user, I want parity with pointer interaction, so that I can comple
 
 **Given** pointer or keyboard focus, **when** a board square is targeted, **then** the orange outline is visible and distinguishable from target and legal-move states.
 
-### Story 5.2: Announce State and Meet Contrast Standards
+### Story 6.2: Announce State and Meet Contrast Standards
 
 As an assistive-technology user, I want state changes announced and visible, so that I receive equivalent gameplay information.
 
@@ -307,7 +391,7 @@ As an assistive-technology user, I want state changes announced and visible, so 
 
 **Given** every normal, hover, focus, legal, target, and disabled state, **when** audited, **then** text and essential indicators meet WCAG AA contrast and visible-focus requirements.
 
-### Story 5.3: Validate the Release Journey
+### Story 6.3: Validate the Release Journey
 
 As a player, I want a stable distributable game, so that installation and complete play work on a supported desktop.
 
