@@ -107,11 +107,20 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 5. **Computer Opponents** — add safe rudimentary and advanced Python AI play.
 6. **Accessible Desktop Release Experience** — complete keyboard, assistive, visual, and release-quality validation for the Python edition.
 
+## Delivery Status (as of 2026-07-25)
+
+- **Epic 1: Browser-Accessible Strategic Reserve** - Done (`_bmad-output/planning-artifacts/epics/epic-1-browser-accessible-strategic-reserve.md`)
+- **Epic 2: Playable Python Rules Foundation** - Not started (`_bmad-output/planning-artifacts/epics/epic-2-playable-python-rules-foundation.md`)
+- **Epic 3: Complete Python Capture and Placement Rules** - Not started (`_bmad-output/planning-artifacts/epics/epic-3-complete-python-capture-and-placement-rules.md`)
+- **Epic 4: Local Desktop Game** - Not started (`_bmad-output/planning-artifacts/epics/epic-4-local-desktop-game.md`)
+- **Epic 5: Computer Opponents** - Not started (`_bmad-output/planning-artifacts/epics/epic-5-computer-opponents.md`)
+- **Epic 6: Accessible Desktop Release Experience** - Not started (`_bmad-output/planning-artifacts/epics/epic-6-accessible-desktop-release-experience.md`)
+
 ## Epic 1: Browser-Accessible Strategic Reserve
 
 Visitors can discover Strategic Reserve through GitHub Pages and play a complete, accessible HTML edition before or independently of the Python desktop release.
 
-### Story 1.1: Publish the Project Site
+### Story 1.1: Publish the Project Site [DONE]
 
 As a visitor, I want a reliable project page and a direct link from the repository, so that I can find and open Strategic Reserve in a browser.
 
@@ -123,7 +132,7 @@ As a visitor, I want a reliable project page and a direct link from the reposito
 
 **Given** a visitor reads the README, **when** they look for a playable version, **then** a prominent link opens the published site and the README distinguishes the HTML and Python/Tkinter editions.
 
-### Story 1.2: Explore the Browser Game Shell
+### Story 1.2: Explore the Browser Game Shell [DONE]
 
 As a browser player, I want a responsive game shell, so that I can understand the game and its available modes on desktop or mobile.
 
@@ -135,7 +144,7 @@ As a browser player, I want a responsive game shell, so that I can understand th
 
 **Given** CSS or JavaScript assets fail to load, **when** the document renders, **then** meaningful title, edition status, and repository navigation remain available as HTML content.
 
-### Story 1.3: Play a Complete Local Browser Game
+### Story 1.3: Play a Complete Local Browser Game [DONE]
 
 As two local players, I want the HTML edition to enforce the official rules, so that we can finish a valid game entirely in the browser.
 
@@ -149,7 +158,7 @@ As two local players, I want the HTML edition to enforce the official rules, so 
 
 **Given** a player places their final reserve checker, **when** the placement completes, **then** the winner is announced immediately, further board input is disabled, and a New Game action is available.
 
-### Story 1.4: Play Against Browser AI
+### Story 1.4: Play Against Browser AI [DONE]
 
 As a solo browser player, I want selectable computer opponents, so that I can practice at an appropriate difficulty without installing Python.
 
@@ -161,7 +170,7 @@ As a solo browser player, I want selectable computer opponents, so that I can pr
 
 **Given** any valid sparse, full, capture-heavy, no-move, or near-win state, **when** either browser AI acts, **then** it returns a legal move or no move without corrupting game state.
 
-### Story 1.5: Validate the Static Browser Release
+### Story 1.5: Validate the Static Browser Release [DONE]
 
 As a browser player, I want a stable and accessible published game, so that I can play from common devices without installation.
 
