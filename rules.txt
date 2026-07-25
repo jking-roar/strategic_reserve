@@ -1,0 +1,191 @@
+# STRATEGIC RESERVE
+
+### by Mark Steere
+
+## INTRODUCTION
+
+Strategic Reserve is a two-player game of skill and luck played on a **6×6** board. Each player begins with **6 checkers in reserve**. The board starts with twelve checkers arranged as follows:
+
+```
+Reserve (Far Player): 6
+
+......
+.RBRB.
+.B..R.
+.R..B.
+.BRBR.
+......
+
+Reserve (Near Player): 6
+```
+
+Legend:
+
+* `R` = Red checker
+* `B` = Blue checker
+* `.` = Empty square
+
+The arrangement above is the game's starting position. 
+
+---
+
+## RESERVE
+
+Each player begins with **6 checkers** in their reserve (a supply kept off the board). Whenever you place a checker onto the board, it comes from your reserve. 
+
+---
+
+## DICE
+
+Two six-sided dice determine one square on the board.
+
+* Purple die = horizontal coordinate (column)
+* Green die = vertical coordinate (row)
+
+Columns are numbered **left to right** from your perspective.
+
+Rows are numbered **near to far** from your perspective. 
+
+---
+
+## PLAY
+
+On your turn:
+
+1. Roll both dice.
+2. Resolve any removals caused by the rolled square.
+3. Place one checker from your reserve. 
+
+---
+
+## GROUP
+
+A **group** consists of one or more orthogonally connected (up, down, left, right) checkers of the same color.
+
+Diagonal connections do not count.
+
+A group is always maximal—it cannot be a subset of a larger connected group. 
+
+---
+
+# HITS
+
+## 1. Hitting an enemy group
+
+If the rolled square belongs to an enemy group:
+
+* Remove the **entire connected group**.
+* Return all removed checkers to your opponent's reserve.
+* Place one checker onto **any empty square**.
+
+Example (Figure 2a)
+
+Dice:
+
+```
+Purple = 5
+Green  = 2
+```
+
+Board:
+
+```
+RR...R
+RRB.RB
+BB.R..
+...BBR
+.B..B.
+R..R..
+```
+
+Yellow hit:
+
+```
+RR...R
+RRB.RB
+BB.R..
+...BYR
+.B..B.
+R..R..
+```
+
+(`Y` marks the rolled square.)
+
+The connected blue group containing `Y` is removed before placing a new checker. 
+
+---
+
+## 2. Hitting a friendly group
+
+If the rolled square belongs to one of your own groups:
+
+* Remove **every adjacent enemy group**.
+* Return those groups to your opponent's reserve.
+* Place your new checker on an **empty orthogonally adjacent square** to the friendly group.
+
+Example (Figures 2b–2c)
+
+Dice:
+
+```
+Purple = 6
+Green  = 3
+```
+
+Friendly group struck:
+
+```
+RR...R
+RRB.RB
+YB.R..
+.B...R
+.B....
+R..R..
+```
+
+(`Y` marks the rolled square.)
+
+After removing adjacent enemy groups, the legal placement squares are:
+
+```
+......
+xx....
+..x...
+xx....
+......
+......
+```
+
+where:
+
+* `x` = legal placement location
+
+One of those squares must receive the newly placed checker. 
+
+---
+
+## 3. Hitting nothing
+
+If the rolled square is empty:
+
+* Place one checker onto **any empty square**. 
+
+---
+
+## OBJECT OF THE GAME
+
+The first player to empty their reserve wins.
+
+You win immediately after placing the last checker from your reserve. 
+
+---
+
+## DESIGN NOTES
+
+The designer wanted to create a game in which a dice roll identifies a single square on the board. Strategic Reserve is presented as the solution to that design challenge. 
+
+---
+
+## AUTHOR'S NOTE
+
+The author permits others to publish these rules and implement the game without licensing fees or royalties, provided that the game's name and rules are not changed and credit is given to Mark Steere. 
