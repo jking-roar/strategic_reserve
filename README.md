@@ -37,3 +37,28 @@ Rules source: `rules.txt`
 ## Browser edition development
 
 Run `npm test` for the engine, AI, and static accessibility contracts, and `npm run check` for syntax and subpath-safe asset validation. To serve the production artifact locally, run `python3 -m http.server 8000 --directory site`.
+
+## Development troubleshooting
+
+### npm reports `Unknown env config "http-proxy"`
+
+npm 11 treats `npm_config_http_proxy` as an unknown npm configuration key.
+This warning comes from the surrounding development environment, not from this
+project (which has no npm configuration). In a POSIX shell, confirm the source
+and remove both possible spellings from the current session:
+
+```sh
+env | sort | grep -iE '(^|_)(http|https)_proxy='
+unset npm_config_http_proxy NPM_CONFIG_HTTP_PROXY
+```
+
+Before unsetting the variable, ensure `HTTP_PROXY` and `HTTPS_PROXY` (or their
+lowercase equivalents) contain the real proxy URLs if network access requires
+them. Do not remove `npm_config_https_proxy`; npm 11 still recognizes it.
+
+If the warning returns in a new shell, remove `npm_config_http_proxy` from the
+configuration that launches the process, such as a shell profile, development
+container, CI variable, or system environment. In this development container it
+is defined in `/etc/environment`; changing that system-wide file requires
+administrator access and affects future processes. Adding an `.npmrc` cannot
+remove an inherited environment variable.
