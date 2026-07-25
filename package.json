@@ -1,0 +1,9 @@
+{
+  "name": "strategic-reserve-html",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test site/tests/*.test.js",
+    "check": "node --check site/js/game-engine.js && node --check site/js/ai.js && node --check site/js/app.js && node site/tests/static-check.js"
+  }
+}
