@@ -27,5 +27,6 @@ modules:
     channel: stable
     sha: 72551742617b4e1c9cb72d2038dc67ce973f7eea
 ides:
+  - codex
   - github-copilot
   - windsurf
