@@ -105,7 +105,9 @@ def target_from_roll(player: str, column: int, row: int) -> tuple[int, int]:
         or column not in range(1, BOARD_SIZE + 1)
         or row not in range(1, BOARD_SIZE + 1)
     ):
-        raise InvalidGameStateError("Dice values must be integers from 1 through 6.")
+        raise InvalidGameStateError(
+            f"Column and row must be built-in integers from 1 through {BOARD_SIZE}."
+        )
     if player == RED:
         return (BOARD_SIZE - row, column - 1)
     if player == BLUE:
