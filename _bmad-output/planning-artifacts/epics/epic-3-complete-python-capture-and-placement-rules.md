@@ -6,6 +6,9 @@ source: _bmad-output/planning-artifacts/epics.md
 lastReviewed: 2026-07-26
 ---
 
+> **Historical acceptance criteria — superseded by Epic 7:** References below to no-move or nullable AI behavior record the earlier contract. Current engines prove every valid active roll has a legal placement.
+
+
 # Epic 3: Complete Python Capture and Placement Rules
 
 Players can resolve enemy, friendly, and empty targets with correct captures and legal destinations.

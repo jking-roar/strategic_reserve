@@ -10,7 +10,7 @@ The **HTML edition** in `site/` and the **Python/Tkinter desktop edition** are
 both playable. The desktop game supports local PvP plus rudimentary and bounded
 advanced computer opponents (the computer always plays Blue).
 
-Keyboard players can Tab through controls, use arrow keys on the board, and press Enter or Space to place. Every human roll is user-initiated, and a turn with no legal placement waits for explicit acknowledgment.
+Keyboard players can Tab through controls, use arrow keys on the board, and press Enter or Space to place. Every human roll is user-initiated, and every valid resolved roll proceeds directly to a legal placement.
 
 ## Install the desktop edition
 

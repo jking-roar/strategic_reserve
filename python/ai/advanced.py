@@ -27,11 +27,9 @@ def get_move(
     budget: float = 4.5,
     clock: Callable[[], float] = time.monotonic,
     outcome_observer: Callable[[tuple[int, int], int, int], None] | None = None,
-) -> tuple[int, int] | None:
+) -> tuple[int, int]:
     """Evaluate complete 36-roll opponent samples while retaining a legal fallback."""
     moves = _resolved_moves(game_state, player_color)
-    if not moves:
-        return None
     if not isfinite(budget) or budget < 0:
         raise ValueError("AI budget must be a finite non-negative number.")
 

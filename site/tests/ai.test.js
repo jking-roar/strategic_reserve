@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createGame, isLegalMove, resolveRoll } from "../js/game-engine.js";
+import { RED, createGame, isLegalMove, resolveRoll } from "../js/game-engine.js";
 import { chooseAdvancedMove, chooseRudimentaryMove, randomIndex } from "../js/ai.js";
 
 test("rudimentary AI returns a legal deterministic selection without mutation",()=>{const state=resolveRoll(createGame(),1,1),snapshot=JSON.stringify(state);const move=chooseRudimentaryMove(state,()=>0.999);assert.ok(isLegalMove(state,move));assert.equal(JSON.stringify(state),snapshot);});
 test("rudimentary RNG clamps an inclusive upper boundary",()=>{assert.equal(randomIndex(4,()=>1),3);assert.equal(randomIndex(4,()=>-1),0);const state=resolveRoll(createGame(),1,1);assert.ok(isLegalMove(state,chooseRudimentaryMove(state,()=>1)));});
-test("both AIs return null when no moves exist",()=>{const state=createGame();assert.equal(chooseRudimentaryMove(state),null);assert.equal(chooseAdvancedMove(state),null);});
+test("both AIs reject unresolved input",()=>{const state=createGame();assert.throws(()=>chooseRudimentaryMove(state),/Invalid game state/);assert.throws(()=>chooseAdvancedMove(state),/Invalid game state/);});
 test("advanced AI fully evaluates exactly 36 outcomes per started candidate",()=>{const state=resolveRoll(createGame(),1,1),snapshot=JSON.stringify(state),counts=new Map();const move=chooseAdvancedMove(state,{now:()=>0,budgetMs:5000,onOutcome:({move})=>{const key=move.join(",");counts.set(key,(counts.get(key)||0)+1);}});assert.ok(isLegalMove(state,move));assert.equal(JSON.stringify(state),snapshot);assert.equal(counts.size,state.legalMoves.length);assert.ok([...counts.values()].every(count=>count===36));});
 test("advanced AI exits before starting another candidate after timeout",()=>{const state=resolveRoll(createGame(),1,1);let clock=0,outcomes=0;const move=chooseAdvancedMove(state,{now:()=>clock+=10,budgetMs:1,onOutcome:()=>outcomes++});assert.ok(isLegalMove(state,move));assert.equal(outcomes,0);assert.equal(clock,20);});
 test("advanced AI exits both outcome loops promptly when budget expires mid-candidate",()=>{const state=resolveRoll(createGame(),1,1);let clock=0,outcomes=0;const move=chooseAdvancedMove(state,{now:()=>clock+=10,budgetMs:100,onOutcome:()=>outcomes++});assert.ok(isLegalMove(state,move));assert.ok(outcomes>0&&outcomes<36);assert.ok(clock<=110);});
-test("advanced AI handles an authoritative terminal placement without reply rolls",()=>{const state=createGame();state.reserves.RED=1;const rolled=resolveRoll(state,1,1);let outcomes=0;const move=chooseAdvancedMove(rolled,{now:()=>0,onOutcome:()=>outcomes++});assert.ok(isLegalMove(rolled,move));assert.equal(outcomes,0);});
+test("advanced AI handles an authoritative terminal placement without reply rolls",()=>{const state=createGame();for(const [r,c] of [[0,0],[0,1],[0,2],[0,3],[0,4]])state.board[r][c]=RED;state.reserves.RED=1;const rolled=resolveRoll(state,1,1);let outcomes=0;const move=chooseAdvancedMove(rolled,{now:()=>0,onOutcome:()=>outcomes++});assert.ok(isLegalMove(rolled,move));assert.equal(outcomes,0);});

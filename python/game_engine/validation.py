@@ -90,11 +90,23 @@ def validate_game_state(state: GameState) -> None:
     if state.turn_context.dice is None and state.turn_context.target is not None:
         _fail("Turn target requires dice values.")
 
+    if state.turn_context.dice is not None and state.turn_context.target is None:
+        _fail("Resolved dice require a turn target.")
+
     if state.turn_context.dice is None and state.turn_context.legal_moves:
         _fail("Legal moves require a resolved roll.")
 
     if state.turn_context.target is not None:
         validate_coordinate(state.turn_context.target)
+        dice = state.turn_context.dice
+        assert dice is not None
+        expected_target = (
+            (BOARD_SIZE - dice.row, dice.column - 1)
+            if state.current_player == RED
+            else (dice.row - 1, BOARD_SIZE - dice.column)
+        )
+        if state.turn_context.target != expected_target:
+            _fail("Turn target must match the dice and current-player perspective.")
 
     if type(state.turn_context.legal_moves) is not list:
         _fail("Turn legal moves must be a list of coordinates.")
@@ -105,3 +117,9 @@ def validate_game_state(state: GameState) -> None:
         if move in seen:
             _fail("Turn legal moves must not contain duplicates.")
         seen.add(move)
+        row, col = move
+        if state.board[row][col] is not None:
+            _fail("Turn legal moves must identify empty squares.")
+
+    if state.winner is None and state.turn_context.dice is not None and not seen:
+        _fail("A resolved active turn must contain a legal placement.")

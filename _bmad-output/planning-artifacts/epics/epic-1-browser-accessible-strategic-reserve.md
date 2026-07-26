@@ -6,6 +6,9 @@ source: _bmad-output/planning-artifacts/epics.md
 lastReviewed: 2026-07-25
 ---
 
+> **Historical acceptance criteria — superseded by Epic 7:** References below to no-move or nullable AI behavior record the earlier contract. Current engines prove every valid active roll has a legal placement.
+
+
 # Epic 1: Browser-Accessible Strategic Reserve
 
 Visitors can discover Strategic Reserve through GitHub Pages and play a complete, accessible HTML edition before or independently of the Python desktop release.

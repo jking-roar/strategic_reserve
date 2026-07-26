@@ -17,11 +17,9 @@ def get_move(
     player_color: str,
     *,
     chooser: Callable[[Sequence[tuple[int, int]]], tuple[int, int]] = random.choice,
-) -> tuple[int, int] | None:
+) -> tuple[int, int]:
     """Choose directly from the engine's legal set without changing ``game_state``."""
     moves = _resolved_moves(game_state, player_color)
-    if not moves:
-        return None
     move = chooser(tuple(moves))
     if move not in moves:
         raise IllegalMoveError("AI chooser returned a move outside the legal set.")

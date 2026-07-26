@@ -9,6 +9,8 @@ context:
   - '{project-root}/_bmad-output/implementation-artifacts/epic-1-context.md'
 ---
 
+> **Historical record — superseded by Epic 7:** Pass/no-placement behavior documented below described the implementation at completion time. Epic 7 proves every valid active roll has a legal placement and removes that behavior from the current product.
+
 <frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">
 
 ## Intent

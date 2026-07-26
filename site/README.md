@@ -4,7 +4,7 @@ This directory is the directly deployable, dependency-free browser edition of **
 
 ## Play and controls
 
-Choose two local players or play Red against the rudimentary/advanced Blue computer, then select **Start game**. The active human explicitly selects **Roll Dice**, then chooses a highlighted legal square. If none exists, the game explains the situation and presents **Pass — No Legal Play** for acknowledgment.
+Choose two local players or play Red against the rudimentary/advanced Blue computer, then select **Start game**. The active human explicitly selects **Roll Dice**, then chooses a highlighted legal square. Every valid resolved roll highlights at least one legal square and proceeds directly to placement.
 
 - **Pointer:** select any enabled control or highlighted board square.
 - **Keyboard:** use Tab/Shift+Tab between controls, arrow keys within the board, Enter or Space to place, and Escape to dismiss the quit confirmation.

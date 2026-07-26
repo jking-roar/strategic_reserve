@@ -7,7 +7,7 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 
 from ai import get_move
-from game_engine import BLUE, GameState, StrategicReserveError, apply_placement, create_game, pass_turn, roll_dice
+from game_engine import BLUE, GameState, StrategicReserveError, apply_placement, create_game, roll_dice
 
 from .board_view import BoardView
 from .controls import GameControls, GameOverView, MenuView
@@ -100,7 +100,7 @@ class GameController:
             self.cancel_selection, self.restore_status,
         )
         self.board.pack(side="left", padx=12, pady=12)
-        self.controls = GameControls(frame, self.roll, self.pass_action, self.request_quit)
+        self.controls = GameControls(frame, self.roll, self.request_quit)
         self.controls.pack(side="right", fill="y", pady=12)
         self.refresh()
         if hasattr(self.root, "after_idle"):
@@ -179,17 +179,6 @@ class GameController:
         except StrategicReserveError as exc:
             self.refresh(f"Illegal or stale square: {exc}")
 
-    def pass_action(self) -> None:
-        if self.state is None or self.animating or self._human_locked():
-            return
-        try:
-            before = self.state
-            self.state = pass_turn(self.state)
-            self.refresh(transition_summary(before, self.state, "pass"))
-            self._start_ai_turn()
-        except StrategicReserveError as exc:
-            self.refresh(str(exc))
-
     def request_quit(self) -> None:
         active = self.state is not None and self.state.winner is None
         if not active:
@@ -237,12 +226,6 @@ class GameController:
             self.refresh(str(exc))
             return
         self.refresh(transition_summary(before, self.state, "roll") + " Blue is thinking.")
-        if not self.state.turn_context.legal_moves:
-            before = self.state
-            self.state = pass_turn(self.state)
-            self.ai_busy = False
-            self.refresh(transition_summary(before, self.state, "pass"))
-            return
         snapshot = self.state
         try:
             future = self._executor.submit(get_move, snapshot, BLUE, self.difficulty)
@@ -262,11 +245,9 @@ class GameController:
             return
         try:
             move = future.result()
-            if move is None and self.state.turn_context.legal_moves:
-                raise ValueError("computer returned no move while legal moves exist")
             before = self.state
-            self.state = pass_turn(self.state) if move is None else apply_placement(self.state, move)
-            message = transition_summary(before, self.state, "pass" if move is None else "placement")
+            self.state = apply_placement(self.state, move)
+            message = transition_summary(before, self.state, "placement")
         except Exception as exc:
             self._ai_future = None
             self._recover_ai_turn(exc)
@@ -281,13 +262,13 @@ class GameController:
         try:
             legal = self.state.turn_context.legal_moves
             before = self.state
-            self.state = apply_placement(self.state, legal[0]) if legal else pass_turn(self.state)
-            event = "placement" if legal else "pass"
+            self.state = apply_placement(self.state, legal[0])
+            event = "placement"
             message = (
                 f"Computer strategy failed; a safe fallback was used: {error}. "
                 + transition_summary(before, self.state, event)
             )
-        except StrategicReserveError as recovery_error:
+        except (StrategicReserveError, IndexError, TypeError):
             # A corrupt engine state is not safely recoverable; return to configuration
             # rather than leave an input-locked Blue turn on screen.
             self.ai_busy = False
