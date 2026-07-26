@@ -28,17 +28,12 @@ def transition_summary(before: GameState, after: GameState, event: str) -> str:
             f"{actor}'s turn. Purple column {dice.column}, Green row {dice.row}. "
             f"Target row {row + 1}, column {col + 1}."
         )
-        details.append(
-            f"{len(after.turn_context.legal_moves)} legal placements."
-            if after.turn_context.legal_moves else "No legal placement; use Pass."
-        )
+        details.append(f"{len(after.turn_context.legal_moves)} legal placements.")
         for color, count in captured.items():
             if count:
                 details.append(f"Captured {count} {player_name(color)} checker{'s' if count != 1 else ''}; returned to reserve.")
         if any(captured.values()):
             details.append(f"Reserves: Red {after.reserves[RED]}, Blue {after.reserves[BLUE]}.")
-    elif event == "pass":
-        details.append(f"{actor} passed. {player_name(after.current_player)}'s turn.")
     elif event == "placement":
         details.append(f"{actor} placed a checker.")
         for color, count in captured.items():

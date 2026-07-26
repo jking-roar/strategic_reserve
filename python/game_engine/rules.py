@@ -137,8 +137,8 @@ def roll_dice(state: GameState, rng: Callable[[], float] = random) -> GameState:
     next_state = clone_state(state)
     next_state.turn_context = TurnContext(dice=DiceRoll(column=column, row=row), target=target)
     legal_moves = _resolve_legal_moves(next_state)
-    if next_state.reserves[next_state.current_player] <= 0:
-        legal_moves = []
+    if not legal_moves:
+        raise InvalidGameStateError("A valid active roll must produce a legal placement.")
     next_state.turn_context.legal_moves = legal_moves
     validate_game_state(next_state)
     return next_state
@@ -152,32 +152,12 @@ def legal_destinations(state: GameState) -> list[tuple[int, int]]:
     return list(state.turn_context.legal_moves)
 
 
-def pass_turn(state: GameState) -> GameState:
-    validate_game_state(state)
-    _require_active(state)
-
-    if state.turn_context.dice is None or state.turn_context.target is None:
-        raise IllegalMoveError("Roll must be resolved before passing a turn.")
-
-    if state.turn_context.legal_moves:
-        raise IllegalMoveError("Cannot pass while legal placements are available.")
-
-    player = state.current_player
-    next_state = clone_state(state)
-    _advance_turn(next_state, player)
-    validate_game_state(next_state)
-    return next_state
-
-
 def apply_placement(state: GameState, destination: tuple[int, int]) -> GameState:
     validate_game_state(state)
     _require_active(state)
 
     if state.turn_context.dice is None or state.turn_context.target is None:
         raise IllegalMoveError("Roll must be resolved before placing a checker.")
-
-    if not state.turn_context.legal_moves:
-        raise IllegalMoveError("No legal placements are available; pass the turn instead.")
 
     if (
         not isinstance(destination, tuple)

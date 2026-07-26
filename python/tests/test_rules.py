@@ -14,7 +14,6 @@ from game_engine import (
     apply_placement,
     create_game,
     legal_destinations,
-    pass_turn,
     roll_dice,
     target_from_roll,
     validate_game_state,
@@ -230,7 +229,8 @@ def test_every_dice_outcome_maps_resolves_and_preserves_conservation(player: str
                 on_board = sum(cell == owner for board_row in rolled.board for cell in board_row)
                 assert on_board + rolled.reserves[owner] == CHECKERS_PER_PLAYER
 
-            completed = apply_placement(rolled, legal[0]) if legal else pass_turn(rolled)
+            assert legal
+            completed = apply_placement(rolled, legal[0])
             validate_game_state(completed)
             assert completed.current_player != player
             assert completed.turn == state.turn + 1
@@ -242,19 +242,13 @@ def test_every_dice_outcome_maps_resolves_and_preserves_conservation(player: str
     assert targets == {(row, col) for row in range(board_size) for col in range(board_size)}
 
 
-def test_no_legal_move_after_resolution_can_be_passed_without_hanging() -> None:
+def test_resolved_active_state_without_legal_placement_is_invalid() -> None:
     state = create_game()
     state.turn_context = TurnContext(
         dice=DiceRoll(column=1, row=1), target=target_from_roll(RED, 1, 1), legal_moves=[]
     )
-    rolled = state
-    assert legal_destinations(rolled) == []
-
-    passed = pass_turn(rolled)
-    assert passed.current_player == BLUE
-    assert passed.turn == rolled.turn + 1
-    assert passed.turn_context == TurnContext()
-
+    with pytest.raises(InvalidGameStateError, match="legal placement"):
+        validate_game_state(state)
 
 @pytest.mark.parametrize(
     ("rows", "dice", "placement"),
@@ -306,9 +300,6 @@ def test_apply_placement_rejects_illegal_and_keeps_state_unchanged() -> None:
         apply_placement(state, (5, 5))  # empty but not legal for this friendly-hit turn
     assert state == original
 
-    with pytest.raises(IllegalMoveError):
-        pass_turn(state)
-    assert state == original
 
 
 @pytest.mark.parametrize("destination", [(True, 0), (0, False), [0, 0], (0.0, 0), (0, "0")])
@@ -332,14 +323,11 @@ def test_legal_destinations_returns_a_defensive_copy() -> None:
     assert legal_destinations(rolled) == expected
 
 
-def test_rejected_roll_and_pass_leave_input_state_unchanged() -> None:
+def test_rejected_roll_leaves_input_state_unchanged() -> None:
     state = create_game()
     original = deepcopy(state)
     with pytest.raises(InvalidGameStateError):
         roll_dice(state, rng=lambda: object())
-    assert state == original
-    with pytest.raises(IllegalMoveError):
-        pass_turn(state)
     assert state == original
 
 
@@ -356,8 +344,7 @@ def test_last_reserve_placement_declares_winner_and_guards_actions() -> None:
     assert won.reserves[RED] == 0
     assert won.turn == state.turn
     assert won.turn_context == TurnContext()
-    for action in (roll_dice, pass_turn):
-        with pytest.raises(IllegalMoveError):
-            action(won)
+    with pytest.raises(IllegalMoveError):
+        roll_dice(won)
     with pytest.raises(IllegalMoveError):
         apply_placement(won, (4, 4))

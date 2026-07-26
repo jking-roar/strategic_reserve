@@ -61,9 +61,9 @@ available.
   remain distinguishable when overlapping.
 - [ ] The screen reader exposes the named game status and reads updated turn,
   purple/green dice, target row/column, legal count, captures, reserves, invalid
-  actions, pass, and winner. Verify these same facts are visible.
+  actions and winner. Verify these same facts are visible.
 - [ ] Complete PvP, rudimentary PvC, and advanced PvC games through start, every
-  capture category, placement, no-move pass, win, New Game/restart, and confirmed
+  capture category, placement, win, New Game/restart, and confirmed
   quit. No terminal board action is accepted and no stale AI result changes a
   restarted/closed session.
 - [ ] Inspect source distribution, wheel metadata, and documentation for Mark

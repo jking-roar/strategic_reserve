@@ -14,7 +14,7 @@ This PRD defines product requirements for Strategic Reserve across two editions 
 
 ### Delivered in code
 - Static HTML edition in `site/` is playable and published-ready.
-- Browser rules coverage includes initial board, dice mapping, group logic, enemy/friendly/empty hit resolution, reserve updates, legal move handling, no-legal-move acknowledgment, and win detection.
+- Browser rules coverage includes initial board, dice mapping, group logic, enemy/friendly/empty hit resolution, reserve updates, the invariant that every active roll has a legal placement, and win detection.
 - Browser AI includes rudimentary and advanced modes.
 - Repository automation includes browser tests (`npm test`) and static checks (`npm run check`).
 

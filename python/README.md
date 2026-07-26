@@ -26,7 +26,6 @@ Roll explicitly, then choose a legal square:
 - **Pointer:** select a green legal square.
 - **Keyboard:** use Tab to reach the board, arrow keys to move, and Enter or
   Space to place.
-- **Pass:** when no green square exists, use **Pass**.
 - **Quit:** quitting or closing the window asks for confirmation; Escape or No
   leaves the game unchanged.
 
@@ -35,22 +34,21 @@ The gold marker is the dice target. Focused or hovered squares have a dark-orang
 target has a dashed border and `T`. Escape clears the transient square
 description without changing selection or game state. Visible status text
 reports turns, dice and target coordinates, legal counts, captures, reserves,
-invalid actions, passes, and winners for assistive-technology access through
+invalid actions, and winners for assistive-technology access through
 native Tk bridges.
 
 ## Capture and placement rules
 
 The engine provides a copy-on-write turn lifecycle: roll the dice, inspect the
-resolved target and legal destinations, then either place a checker or explicitly
-pass when no placement is available. Enemy hits remove the complete orthogonally
+resolved target and legal destinations, then place on one of the always-available
+legal squares. Enemy hits remove the complete orthogonally
 connected enemy group and permit placement on any empty square. Friendly hits
 capture each adjacent enemy group once and restrict placement to empty orthogonal
 neighbors of the friendly group. Empty hits permit placement on every empty square.
-When the active player has no reserve checker, resolution exposes no placement and
-the caller completes the turn with the explicit pass operation.
+A player whose reserve reaches zero wins immediately and cannot begin another turn.
 
 Dice values must be built-in integers from 1 through 6, and placement coordinates
-must be built-in integers using zero-based board coordinates. Every successful placement or legal pass advances
+must be built-in integers using zero-based board coordinates. Every successful placement advances
 the turn exactly once, while rejected actions leave caller-owned state unchanged.
 The scenario suite covers maximal groups, multi-contact capture de-duplication,
 diagonal and disconnected survival, both player perspectives across all 36 dice

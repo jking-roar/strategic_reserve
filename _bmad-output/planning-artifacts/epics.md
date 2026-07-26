@@ -120,6 +120,8 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 
 ## Epic 1: Browser-Accessible Strategic Reserve
 
+> **Historical criteria superseded by Epic 7:** Earlier no-move/nullable behavior below is not part of the current engine contract.
+
 Visitors can discover Strategic Reserve through GitHub Pages and play a complete, accessible HTML edition before or independently of the Python desktop release.
 
 ### Story 1.1: Publish the Project Site [DONE]
@@ -232,6 +234,8 @@ As a player, I want a roll and placement to update one authoritative state, so t
 
 ## Epic 3: Complete Python Capture and Placement Rules
 
+> **Historical criteria superseded by Epic 7:** Earlier no-move/nullable behavior below is not part of the current engine contract.
+
 Players can resolve enemy, friendly, and empty targets with correct captures and legal destinations.
 
 ### Story 3.1: Resolve an Enemy-Group Hit
@@ -333,6 +337,8 @@ As a player, I want accidental quitting prevented, so that I do not lose a game 
 **Given** the confirmation, **when** No or Escape is selected, **then** play resumes unchanged; **when** Yes is selected, **then** the application exits cleanly.
 
 ## Epic 5: Computer Opponents
+
+> **Historical criteria superseded by Epic 7:** Earlier no-move/nullable behavior below is not part of the current engine contract.
 
 A solo player can choose between fast random play and bounded strategic play without compromising engine integrity.
 

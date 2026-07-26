@@ -20,8 +20,7 @@ class MenuView(tk.Frame):
 
 
 class GameControls(tk.Frame):
-    def __init__(self, parent: tk.Misc, on_roll: Callable[[], None], on_pass: Callable[[], None],
-                 on_quit: Callable[[], None]):
+    def __init__(self, parent: tk.Misc, on_roll: Callable[[], None], on_quit: Callable[[], None]):
         super().__init__(parent, padx=12)
         self.status = tk.StringVar(value="")
         self.announcement = tk.StringVar(value="")
@@ -34,8 +33,6 @@ class GameControls(tk.Frame):
         tk.Label(self, textvariable=self.reserves).pack()
         self.roll = tk.Button(self, text="Roll Dice", command=on_roll)
         self.roll.pack(fill="x", pady=2)
-        self.pass_button = tk.Button(self, text="Pass", command=on_pass)
-        self.pass_button.pack(fill="x", pady=2)
         tk.Button(self, text="Quit", command=on_quit).pack(fill="x", pady=2)
 
     def announce(self, text: str) -> None:
@@ -62,9 +59,7 @@ class GameControls(tk.Frame):
             self.dice.set("Purple column: –   Green row: –")
         self.reserves.set(f"Red reserve: {state.reserves[RED]}   Blue reserve: {state.reserves[BLUE]}")
         can_roll = not input_locked and not animating and state.winner is None and dice is None
-        can_pass = not input_locked and not animating and state.winner is None and dice is not None and not state.turn_context.legal_moves
         self.roll.configure(state=tk.NORMAL if can_roll else tk.DISABLED)
-        self.pass_button.configure(state=tk.NORMAL if can_pass else tk.DISABLED)
 
 
 class GameOverView(tk.Frame):

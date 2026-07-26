@@ -7,7 +7,7 @@ import pytest
 
 from ai import get_advanced_move, get_move, get_rudimentary_move
 from game_engine import (
-    BLUE, RED, GameState, IllegalMoveError, TurnContext, create_game,
+    BLUE, RED, GameState, IllegalMoveError, InvalidGameStateError, TurnContext, create_game,
     legal_destinations, roll_dice, validate_game_state,
 )
 
@@ -39,10 +39,11 @@ def test_ai_is_legal_prompt_and_immutable(strategy, roll):
 
 
 @pytest.mark.parametrize("strategy", [get_rudimentary_move, get_advanced_move])
-def test_no_move_returns_none(strategy):
+def test_invalid_resolved_state_without_moves_is_rejected(strategy):
     state = _resolved()
     state.turn_context.legal_moves = []
-    assert strategy(state, RED) is None
+    with pytest.raises(InvalidGameStateError, match="legal placement"):
+        strategy(state, RED)
 
 
 @pytest.mark.parametrize("strategy", [get_rudimentary_move, get_advanced_move])

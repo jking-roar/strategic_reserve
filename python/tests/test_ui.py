@@ -1,3 +1,4 @@
+from copy import deepcopy
 """Display-independent checks for the Tk client boundary."""
 
 from concurrent.futures import Future
@@ -127,19 +128,11 @@ def test_controller_roll_placement_and_illegal_activation_preserve_authority() -
     assert controller.state.current_player == BLUE
 
 
-def test_controller_pass_and_roll_guards() -> None:
-    state = create_game()
-    state.turn_context = TurnContext(dice=DiceRoll(1, 1), target=(5, 0), legal_moves=[])
-    controller = _controller(state)
+def test_controller_roll_guard_ignores_already_resolved_turn() -> None:
+    controller = _controller(roll_dice(create_game(), lambda: 0.1))
+    before = deepcopy(controller.state)
     controller.roll()
-    assert controller.state is state and not controller.animating
-    controller.pass_action()
-    assert controller.state.current_player == BLUE
-
-    controller.state.winner = BLUE
-    controller.state.reserves[BLUE] = 0
-    controller.roll()
-    assert not controller.animating
+    assert controller.state == before
 
 
 def test_quit_no_escape_semantics_and_yes_invalidate_session() -> None:

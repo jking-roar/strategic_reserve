@@ -11,6 +11,8 @@ context: []
 warnings: [multiple-goals]
 ---
 
+> **Historical record — superseded by Epic 7:** Pass/no-placement behavior documented below described the implementation at completion time. Epic 7 proves every valid active roll has a legal placement and removes that behavior from the current product.
+
 <intent-contract>
 
 ## Intent
