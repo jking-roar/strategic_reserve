@@ -5,10 +5,10 @@ This folder breaks out `_bmad-output/planning-artifacts/epics.md` into one file 
 ## Current Status (2026-07-26)
 
 - Epic 1 - Done
-- Epic 2 - Not started
+- Epic 2 - Done
 - Epic 3 - Done
 - Epic 4 - Done
-- Epic 5 - Not started
+- Epic 5 - Done
 - Epic 6 - Not started
 
 ## Files

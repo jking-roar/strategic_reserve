@@ -107,13 +107,13 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 5. **Computer Opponents** — add safe rudimentary and advanced Python AI play.
 6. **Accessible Desktop Release Experience** — complete keyboard, assistive, visual, and release-quality validation for the Python edition.
 
-## Delivery Status (as of 2026-07-25)
+## Delivery Status (as of 2026-07-26)
 
 - **Epic 1: Browser-Accessible Strategic Reserve** - Done (`_bmad-output/planning-artifacts/epics/epic-1-browser-accessible-strategic-reserve.md`)
-- **Epic 2: Playable Python Rules Foundation** - Not started (`_bmad-output/planning-artifacts/epics/epic-2-playable-python-rules-foundation.md`)
-- **Epic 3: Complete Python Capture and Placement Rules** - Not started (`_bmad-output/planning-artifacts/epics/epic-3-complete-python-capture-and-placement-rules.md`)
-- **Epic 4: Local Desktop Game** - Not started (`_bmad-output/planning-artifacts/epics/epic-4-local-desktop-game.md`)
-- **Epic 5: Computer Opponents** - Not started (`_bmad-output/planning-artifacts/epics/epic-5-computer-opponents.md`)
+- **Epic 2: Playable Python Rules Foundation** - Done (`_bmad-output/planning-artifacts/epics/epic-2-playable-python-rules-foundation.md`)
+- **Epic 3: Complete Python Capture and Placement Rules** - Done (`_bmad-output/planning-artifacts/epics/epic-3-complete-python-capture-and-placement-rules.md`)
+- **Epic 4: Local Desktop Game** - Done (`_bmad-output/planning-artifacts/epics/epic-4-local-desktop-game.md`)
+- **Epic 5: Computer Opponents** - Done (`_bmad-output/planning-artifacts/epics/epic-5-computer-opponents.md`)
 - **Epic 6: Accessible Desktop Release Experience** - Not started (`_bmad-output/planning-artifacts/epics/epic-6-accessible-desktop-release-experience.md`)
 
 ## Epic 1: Browser-Accessible Strategic Reserve

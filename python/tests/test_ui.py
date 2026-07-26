@@ -1,7 +1,9 @@
 """Display-independent checks for the Tk client boundary."""
 
+from concurrent.futures import Future
+
 from ui.board_view import BEIGE, LEGAL_DARK, LEGAL_LIGHT, PIECE, TARGET
-from game_engine import BLUE, DiceRoll, RED, TurnContext, create_game
+from game_engine import BLUE, DiceRoll, RED, TurnContext, apply_placement, create_game, roll_dice
 from ui.main import GameController
 
 
@@ -148,3 +150,67 @@ def test_refresh_creates_only_one_winner_overlay(monkeypatch) -> None:
     controller.refresh()
     controller.refresh()
     assert len(created) == 1
+
+
+class _ImmediateExecutor:
+    def submit(self, function, *args):
+        future = Future()
+        future.set_result(function(*args))
+        return future
+
+
+class _FailingExecutor:
+    def submit(self, *_args):
+        raise RuntimeError("worker unavailable")
+
+
+def test_pvc_blue_rolls_and_completes_turn_without_human_race() -> None:
+    red_roll = roll_dice(create_game(), lambda: 0.0)
+    blue_turn = apply_placement(red_roll, red_roll.turn_context.legal_moves[0])
+    controller = _controller(blue_turn)
+    controller.mode = "pvc"
+    controller.difficulty = "rudimentary"
+    controller.ai_busy = False
+    controller._executor = _ImmediateExecutor()
+
+    controller._start_ai_turn()
+    assert controller.ai_busy and controller._human_locked()
+    assert controller.state.current_player == BLUE
+    controller.root.after_calls.pop()()
+    assert not controller.ai_busy
+    assert controller.state.current_player == RED
+
+
+def test_stale_ai_result_cannot_mutate_replaced_session() -> None:
+    controller = _controller()
+    controller.ai_busy = True
+    snapshot = controller.state
+    future = Future()
+    future.set_result((0, 0))
+    controller._poll_ai(future, controller.generation - 1, snapshot)
+    assert controller.state is snapshot
+    assert controller.ai_busy
+
+
+def test_submission_and_arbitrary_worker_failures_unlock_controller() -> None:
+    red_roll = roll_dice(create_game(), lambda: 0.0)
+    blue_turn = apply_placement(red_roll, red_roll.turn_context.legal_moves[0])
+    controller = _controller(blue_turn)
+    controller.mode = "pvc"
+    controller.difficulty = "advanced"
+    controller.ai_busy = False
+    controller._executor = _FailingExecutor()
+    controller._start_ai_turn()
+    assert not controller.ai_busy
+    assert controller.state.current_player == RED
+    assert "safe fallback" in controller.controls.renders[-1][1]
+
+    controller.state = roll_dice(blue_turn, lambda: 0.0)
+    future = Future()
+    future.set_exception(RuntimeError("strategy exploded"))
+    controller.ai_busy = True
+    snapshot = controller.state
+    controller._poll_ai(future, controller.generation, snapshot)
+    assert not controller.ai_busy
+    assert controller.state.current_player == RED
+    assert "strategy exploded" in controller.controls.renders[-1][1]

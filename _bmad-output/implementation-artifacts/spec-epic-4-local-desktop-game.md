@@ -79,6 +79,9 @@ warnings: [multiple-goals]
 
 ## Review Triage Log
 
+- 2026-07-26 follow-up audit: the complete Python engine and headless UI suite
+  reconfirmed all Epic 4 behavior while integrating Epic 5; no regressions found.
+
 ### 2026-07-26 — Review pass
 - intent_gap: 0
 - bad_spec: 0

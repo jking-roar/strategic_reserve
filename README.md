@@ -6,7 +6,9 @@ Implementation of **Strategic Reserve** for local and computer play.
 
 **[Launch the playable HTML edition](https://jking-roar.github.io/strategic_reserve/)** — a complete, responsive static game with two-player and rudimentary/advanced computer modes. It requires no installation or backend and is published through the repository's GitHub Pages workflow. The [source repository](https://github.com/jking-roar/strategic_reserve) remains available alongside it.
 
-The **HTML edition** in `site/` is playable now. A separate **Python/Tkinter desktop edition** is planned; the browser implementation does not replace it.
+The **HTML edition** in `site/` and the **Python/Tkinter desktop edition** are
+both playable. The desktop game supports local PvP plus rudimentary and bounded
+advanced computer opponents (the computer always plays Blue).
 
 Keyboard players can Tab through controls, use arrow keys on the board, and press Enter or Space to place. Every human roll is user-initiated, and a turn with no legal placement waits for explicit acknowledgment.
 
