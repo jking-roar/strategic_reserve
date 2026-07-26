@@ -32,4 +32,4 @@ class GameState:
     current_player: str
     turn: int = 1
     turn_context: TurnContext = field(default_factory=TurnContext)
-
+    winner: str | None = None

@@ -49,8 +49,24 @@ def validate_game_state(state: GameState) -> None:
         if board_counts[player] + state.reserves[player] != CHECKERS_PER_PLAYER:
             _fail("Board and reserve totals must conserve each player's 12 checkers.")
 
+    empty_reserves = [player for player in PLAYERS if state.reserves[player] == 0]
+    if len(empty_reserves) > 1:
+        _fail("Both players cannot have empty reserves.")
+    if empty_reserves and state.winner != empty_reserves[0]:
+        _fail("A player with no reserve checkers must be the winner.")
+    if not empty_reserves and state.winner is not None:
+        _fail("Winner must have no reserve checkers.")
+
     if state.current_player not in PLAYERS:
         _fail("Current player must be RED or BLUE.")
+
+    if state.winner is not None:
+        if state.winner not in PLAYERS:
+            _fail("Winner must be RED, BLUE, or None.")
+        if state.current_player != state.winner:
+            _fail("Current player must remain the winner after game completion.")
+        if state.turn_context != TurnContext():
+            _fail("Completed games cannot retain a turn context.")
 
     if not isinstance(state.turn, int) or state.turn < 1:
         _fail("Turn counter must be a positive integer.")
@@ -89,4 +105,3 @@ def validate_game_state(state: GameState) -> None:
         if move in seen:
             _fail("Turn legal moves must not contain duplicates.")
         seen.add(move)
-

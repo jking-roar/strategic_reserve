@@ -1,6 +1,20 @@
-# Strategic Reserve Python Core
+# Strategic Reserve Python Desktop Game
 
 Python gameplay foundation for Strategic Reserve.
+
+## Play locally
+
+Tkinter is the only GUI dependency. From the repository root, launch with:
+
+```bash
+python python/main.py
+```
+
+Choose **New Game** for local two-player play. Roll explicitly, then select a
+green legal square with the mouse or use Tab, arrow keys, and Enter/Space. The
+gold marker is the dice target. When no green square exists, use **Pass**. Quit
+or window close confirms before abandoning an unfinished game; Escape/No leaves
+the game unchanged. Computer opponents are intentionally unavailable.
 
 ## Capture and placement rules
 
@@ -30,5 +44,9 @@ python -m pytest
 
 - `game_engine/` core rules, state, validation, and group logic
 - `ai/` AI integration boundary (depends on `game_engine` only)
-- `ui/` UI integration boundary (depends on `ai`/`game_engine`)
-- `tests/` Epic 2 foundation and Epic 3 capture/placement scenario tests
+- `ui/` replaceable Tk presentation/controller (depends on `game_engine`)
+- `tests/` engine, terminal lifecycle, headless UI-boundary, and architecture tests
+
+The engine remains authoritative for board, reserves, player, turn context, and
+winner. Automated tests import and exercise controller boundaries without opening
+a window, so they do not require `$DISPLAY`; interactive smoke testing does.
