@@ -105,7 +105,7 @@ class GameController:
             return
         locked = self._human_locked()
         self.board.render(self.state, enabled=not locked and not self.animating and self.state.winner is None)
-        self.controls.render(self.state, message, self.animating or locked)
+        self.controls.render(self.state, message, self.animating, input_locked=locked)
         if self.state.winner is not None and self.game_over is None:
             self.game_over = GameOverView(
                 self.container, self.state.winner, self.show_menu, self.request_quit

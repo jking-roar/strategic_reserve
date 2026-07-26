@@ -54,8 +54,8 @@ class _Controls:
         self.renders = []
         self.dice = _Value()
 
-    def render(self, state, message="", animating=False):
-        self.renders.append((state, message, animating))
+    def render(self, state, message="", animating=False, input_locked=False):
+        self.renders.append((state, message, animating, input_locked))
 
 
 def _controller(state=None):
