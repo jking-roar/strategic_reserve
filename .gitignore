@@ -4,3 +4,7 @@
 
 .idea
 *.iml
+
+python/.pytest_cache/
+python/**/__pycache__/
+
