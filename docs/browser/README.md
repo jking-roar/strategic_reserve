@@ -1,6 +1,6 @@
 # Browser Edition Notes
 
-Last reviewed: 2026-07-25
+Last reviewed: 2026-07-26
 
 ## Scope in repository
 
@@ -25,3 +25,5 @@ python -m http.server 8000 --directory site
 
 Open `http://localhost:8000/` for manual play checks.
 
+See the [browser controls and manual test notes](../../site/README.md) for player
+instructions, keyboard behavior, and current limitations.

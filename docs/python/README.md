@@ -9,10 +9,10 @@ two-player/PvC Tk desktop client.
 
 ## Structure
 
-- `python/game_engine/` - datamodels, validation, state creation, group discovery, dice roll mapping, and basic placement transition.
+- `python/game_engine/` - datamodels, validation, state creation, group discovery, dice mapping, and the complete copy-on-write turn and capture lifecycle.
 - `python/ai/` - checked rudimentary and deadline-bounded advanced strategies.
 - `python/ui/` - replaceable board, controls, and single-window controller.
-- `python/tests/` - architecture and engine foundation tests.
+- `python/tests/` - engine, AI, UI-boundary, launcher, release-journey, and architecture tests.
 
 ## Implemented behaviors
 

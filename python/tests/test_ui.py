@@ -4,7 +4,8 @@ from concurrent.futures import Future
 
 from ui.board_view import BEIGE, LEGAL_DARK, LEGAL_LIGHT, PIECE, TARGET, move_focus, square_description
 from game_engine import BLUE, DiceRoll, RED, TurnContext, apply_placement, create_game, roll_dice
-from ui.main import GameController, player_name, transition_summary
+from ui.main import GameController
+from ui.presentation import player_name, transition_summary
 
 
 def test_player_name_rejects_unknown_domain_values() -> None:
@@ -31,6 +32,16 @@ def test_transition_summaries_cover_roll_placement_reserve_and_turn() -> None:
     placed = apply_placement(rolled, rolled.turn_context.legal_moves[0])
     placement_text = transition_summary(rolled, placed, "placement")
     assert "placed a checker" in placement_text and "Reserves:" in placement_text and "Blue's turn" in placement_text
+
+
+def test_transition_summary_rejects_unknown_or_incomplete_events() -> None:
+    import pytest
+
+    state = create_game()
+    with pytest.raises(ValueError, match="Unknown transition event"):
+        transition_summary(state, state, "restart")
+    with pytest.raises(ValueError, match="requires dice and a target"):
+        transition_summary(state, state, "roll")
 
 
 def test_palette_and_controller_import_without_a_display() -> None:

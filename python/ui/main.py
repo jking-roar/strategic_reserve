@@ -7,57 +7,11 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 
 from ai import get_move
-from game_engine import BLUE, RED, GameState, StrategicReserveError, apply_placement, create_game, pass_turn, roll_dice
+from game_engine import BLUE, GameState, StrategicReserveError, apply_placement, create_game, pass_turn, roll_dice
 
 from .board_view import BoardView
 from .controls import GameControls, GameOverView, MenuView
-
-
-def player_name(player: str) -> str:
-    if player == RED:
-        return "Red"
-    if player == BLUE:
-        return "Blue"
-    raise ValueError(f"Unknown player: {player!r}")
-
-
-def transition_summary(before: GameState, after: GameState, event: str) -> str:
-    """Describe an authoritative transition without owning any game state."""
-    actor = player_name(before.current_player)
-    captured = {
-        color: max(0, after.reserves[color] - before.reserves[color])
-        for color in before.reserves
-    }
-    details: list[str] = []
-    if event == "roll" and after.turn_context.dice and after.turn_context.target:
-        dice, (row, col) = after.turn_context.dice, after.turn_context.target
-        details.append(
-            f"{actor}'s turn. Purple column {dice.column}, Green row {dice.row}. "
-            f"Target row {row + 1}, column {col + 1}."
-        )
-        details.append(
-            f"{len(after.turn_context.legal_moves)} legal placements."
-            if after.turn_context.legal_moves else "No legal placement; use Pass."
-        )
-        for color, count in captured.items():
-            if count:
-                details.append(f"Captured {count} {player_name(color)} checker{'s' if count != 1 else ''}; returned to reserve.")
-        if any(captured.values()):
-            details.append(f"Reserves: Red {after.reserves['RED']}, Blue {after.reserves['BLUE']}.")
-    elif event == "pass":
-        details.append(f"{actor} passed. {player_name(after.current_player)}'s turn.")
-    elif event == "placement":
-        details.append(f"{actor} placed a checker.")
-        for color, count in captured.items():
-            if count:
-                details.append(f"Captured {count} {player_name(color)} checker{'s' if count != 1 else ''}; returned to reserve.")
-        details.append(
-            f"Reserves: Red {after.reserves['RED']}, Blue {after.reserves['BLUE']}."
-        )
-        details.append(
-            f"{player_name(after.winner)} wins!" if after.winner else f"{player_name(after.current_player)}'s turn."
-        )
-    return " ".join(details)
+from .presentation import player_name, transition_summary
 
 
 class QuitDialog(tk.Toplevel):
