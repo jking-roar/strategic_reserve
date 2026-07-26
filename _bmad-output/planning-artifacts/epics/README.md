@@ -2,11 +2,11 @@
 
 This folder breaks out `_bmad-output/planning-artifacts/epics.md` into one file per epic so each can be reviewed independently.
 
-## Current Status (2026-07-25)
+## Current Status (2026-07-26)
 
 - Epic 1 - Done
 - Epic 2 - Not started
-- Epic 3 - Not started
+- Epic 3 - Done
 - Epic 4 - Not started
 - Epic 5 - Not started
 - Epic 6 - Not started
@@ -19,4 +19,3 @@ This folder breaks out `_bmad-output/planning-artifacts/epics.md` into one file 
 - `epic-4-local-desktop-game.md`
 - `epic-5-computer-opponents.md`
 - `epic-6-accessible-desktop-release-experience.md`
-
