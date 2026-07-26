@@ -1,6 +1,6 @@
 ---
 title: Strategic Reserve PRD
-status: draft
+status: active
 created: 2026-07-25
 updated: 2026-07-25
 ---
@@ -8,10 +8,32 @@ updated: 2026-07-25
 # PRD: Strategic Reserve
 
 ## 0. Document Purpose
-This PRD defines requirements for a desktop Python implementation of Strategic Reserve, a two-player dice-based board game designed by Mark Steere. The document is structured with a Glossary-anchored vocabulary, features grouped with nested functional requirements, and inline assumptions tagged for explicit confirmation. This PRD serves as the foundation for architecture design and epic/story creation.
+This PRD defines product requirements for Strategic Reserve across two editions in this repository: a shipped static HTML edition and a planned Python desktop edition. It uses a shared glossary and functional requirement set so browser and desktop work stay aligned while implementation status remains explicit.
+
+## 0.1 Implementation Status Snapshot (as of 2026-07-25)
+
+### Delivered in code
+- Static HTML edition in `site/` is playable and published-ready.
+- Browser rules coverage includes initial board, dice mapping, group logic, enemy/friendly/empty hit resolution, reserve updates, legal move handling, no-legal-move acknowledgment, and win detection.
+- Browser AI includes rudimentary and advanced modes.
+- Repository automation includes browser tests (`npm test`) and static checks (`npm run check`).
+
+### Delivered in Python core
+- Layer skeleton exists in `python/game_engine`, `python/ai`, and `python/ui`.
+- Python engine includes state models, validation, group detection, dice rolling, perspective target mapping, and basic placement transition.
+- Python unit suite passes (`python -m pytest`).
+
+### Not yet delivered in Python desktop flow
+- Full capture/placement resolution for enemy/friendly/empty hit categories.
+- Python AI implementations.
+- Python UI loop and end-user desktop gameplay.
+
+### Roadmap alignment note
+- Epic 1 (browser-accessible release) is delivered.
+- Epic 2 foundation work is implemented in code, but tracker artifacts still show "Not started" and require separate status reconciliation.
 
 ## 1. Vision
-Strategic Reserve is a desktop application that brings the dice-based strategy game to life with visual board representation, game simulation, and AI opponents. The application enables players to experience the game's unique mechanics where dice rolls determine board positions and strategic checker placement determines victory. For the builder, this project provides an opportunity to implement game logic, AI algorithms (random and minimax-based), and a lightweight Python UI framework.
+Strategic Reserve provides a reliable rules-accurate way to play Mark Steere's game locally, with the browser edition available now and the Python desktop edition following. The product vision is one rules authority with consistent behavior across editions: complete game simulation, clear state presentation, and selectable AI difficulty.
 
 ## 2. Target User
 
@@ -225,7 +247,7 @@ System allows quitting the current game with confirmation if game is in progress
 
 ## 5. Non-Goals (Explicit)
 - Online multiplayer or network play
-- Mobile or web platform support
+- Native mobile app support
 - Tournament or league features
 - Game replay or analysis tools
 - Custom board sizes or rule variants
@@ -237,12 +259,10 @@ System allows quitting the current game with confirmation if game is in progress
 ## 6. MVP Scope
 
 ### 6.1 In Scope
-- Complete game board visualization (6×6 grid, checkers, dice, reserves)
-- Full game simulation engine (all rules implemented correctly)
-- Two AI difficulty levels (random and minimax/stochastic)
-- PvC and PvP local multiplayer modes
-- Basic game controls (new game, quit)
-- Legal move highlighting and game state display
+- HTML edition: complete local browser gameplay, PvP/PvC modes, and two AI difficulty levels
+- HTML edition: deployable static site flow suitable for GitHub Pages
+- Python edition: layered engine/AI/UI architecture foundation with validated state and turn primitives
+- Python edition: progression to full capture rules, desktop UI loop, and AI parity with browser behaviors
 
 ### 6.2 Out of Scope for MVP
 - Online multiplayer (deferred indefinitely - personal project scope)
@@ -260,6 +280,11 @@ System allows quitting the current game with confirmation if game is in progress
 
 ## 8. Open Questions
 - None at this time.
+
+## 8.1 Current Risks and Gaps
+- Python capture and legal-move resolution features are not yet implemented, so Python desktop parity with browser rules is incomplete.
+- Python AI and UI packages are placeholders; only import-boundary scaffolding exists today.
+- Epic tracking metadata and implementation reality currently diverge for post-browser milestones.
 
 ## 9. Assumptions Index
 - Inline assumption from FR-12: AI search depth of 3-5 ply is appropriate for hobby project performance.
