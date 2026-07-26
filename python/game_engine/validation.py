@@ -71,6 +71,22 @@ def validate_game_state(state: GameState) -> None:
         if dice.row not in range(1, BOARD_SIZE + 1):
             _fail("Dice row value must be between 1 and 6.")
 
+    if state.turn_context.dice is None and state.turn_context.target is not None:
+        _fail("Turn target requires dice values.")
+
+    if state.turn_context.dice is None and state.turn_context.legal_moves:
+        _fail("Legal moves require a resolved roll.")
+
     if state.turn_context.target is not None:
         validate_coordinate(state.turn_context.target)
+
+    if type(state.turn_context.legal_moves) is not list:
+        _fail("Turn legal moves must be a list of coordinates.")
+
+    seen: set[tuple[int, int]] = set()
+    for move in state.turn_context.legal_moves:
+        validate_coordinate(move)
+        if move in seen:
+            _fail("Turn legal moves must not contain duplicates.")
+        seen.add(move)
 

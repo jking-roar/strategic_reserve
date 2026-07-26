@@ -22,6 +22,7 @@ class DiceRoll:
 class TurnContext:
     dice: DiceRoll | None = None
     target: Coordinate | None = None
+    legal_moves: list[Coordinate] = field(default_factory=list)
 
 
 @dataclass(slots=True)
