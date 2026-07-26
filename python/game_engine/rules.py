@@ -98,6 +98,11 @@ def _advance_turn(state: GameState, player: str) -> None:
     state.turn_context = TurnContext()
 
 
+def _require_active(state: GameState) -> None:
+    if state.winner is not None:
+        raise IllegalMoveError("Game is complete; start a new game to continue.")
+
+
 def target_from_roll(player: str, column: int, row: int) -> tuple[int, int]:
     if (
         type(column) is not int
@@ -117,6 +122,7 @@ def target_from_roll(player: str, column: int, row: int) -> tuple[int, int]:
 
 def roll_dice(state: GameState, rng: Callable[[], float] = random) -> GameState:
     validate_game_state(state)
+    _require_active(state)
     if (
         state.turn_context.dice is not None
         or state.turn_context.target is not None
@@ -140,6 +146,7 @@ def roll_dice(state: GameState, rng: Callable[[], float] = random) -> GameState:
 
 def legal_destinations(state: GameState) -> list[tuple[int, int]]:
     validate_game_state(state)
+    _require_active(state)
     if state.turn_context.dice is None or state.turn_context.target is None:
         raise IllegalMoveError("Roll must be resolved before requesting legal destinations.")
     return list(state.turn_context.legal_moves)
@@ -147,6 +154,7 @@ def legal_destinations(state: GameState) -> list[tuple[int, int]]:
 
 def pass_turn(state: GameState) -> GameState:
     validate_game_state(state)
+    _require_active(state)
 
     if state.turn_context.dice is None or state.turn_context.target is None:
         raise IllegalMoveError("Roll must be resolved before passing a turn.")
@@ -163,6 +171,7 @@ def pass_turn(state: GameState) -> GameState:
 
 def apply_placement(state: GameState, destination: tuple[int, int]) -> GameState:
     validate_game_state(state)
+    _require_active(state)
 
     if state.turn_context.dice is None or state.turn_context.target is None:
         raise IllegalMoveError("Roll must be resolved before placing a checker.")
@@ -195,6 +204,10 @@ def apply_placement(state: GameState, destination: tuple[int, int]) -> GameState
     next_state = clone_state(state)
     next_state.board[row][col] = player
     next_state.reserves[player] -= 1
-    _advance_turn(next_state, player)
+    if next_state.reserves[player] == 0:
+        next_state.winner = player
+        next_state.turn_context = TurnContext()
+    else:
+        _advance_turn(next_state, player)
     validate_game_state(next_state)
     return next_state

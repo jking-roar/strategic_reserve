@@ -1,7 +1,7 @@
 ---
 epic: 4
 title: Local Desktop Game
-status: not-started
+status: done
 source: _bmad-output/planning-artifacts/epics.md
 lastReviewed: 2026-07-25
 ---
@@ -12,11 +12,11 @@ Two people can start, play, finish, restart, and safely quit a complete game on 
 
 ## Story Status
 
-- 4.1 - Not started
-- 4.2 - Not started
-- 4.3 - Not started
-- 4.4 - Not started
-- 4.5 - Not started
+- 4.1 - Done
+- 4.2 - Done
+- 4.3 - Done
+- 4.4 - Done
+- 4.5 - Done
 
 ## Stories
 
@@ -71,4 +71,3 @@ As a player, I want accidental quitting prevented, so that I do not lose a game 
 **Given** a game is active, **when** Quit or window close is requested, **then** a Yes/No confirmation appears.
 
 **Given** the confirmation, **when** No or Escape is selected, **then** play resumes unchanged; **when** Yes is selected, **then** the application exits cleanly.
-

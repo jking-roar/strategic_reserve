@@ -96,3 +96,30 @@ def test_validate_rejects_material_non_conservation() -> None:
         validate_game_state(state)
 
 
+def test_clone_and_validation_preserve_consistent_winner() -> None:
+    from game_engine import clone_state
+
+    board = [[None for _ in range(6)] for _ in range(6)]
+    board[0] = [RED] * 6
+    board[1] = [RED] * 6
+    board[2][0] = BLUE
+    state = GameState(board=board, reserves={RED: 0, BLUE: 11}, current_player=RED, winner=RED)
+    validate_game_state(state)
+    copied = clone_state(state)
+    assert copied == state and copied is not state
+
+    copied.current_player = BLUE
+    with pytest.raises(InvalidGameStateError):
+        validate_game_state(copied)
+
+
+def test_zero_reserve_requires_exactly_one_consistent_winner() -> None:
+    state = create_game()
+    state.reserves[RED] = 0
+    with pytest.raises(InvalidGameStateError):
+        validate_game_state(state)
+
+    state.reserves[BLUE] = 0
+    state.winner = RED
+    with pytest.raises(InvalidGameStateError):
+        validate_game_state(state)

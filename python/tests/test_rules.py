@@ -5,6 +5,7 @@ import pytest
 from game_engine import (
     CHECKERS_PER_PLAYER,
     BLUE,
+    DiceRoll,
     GameState,
     RED,
     TurnContext,
@@ -242,19 +243,11 @@ def test_every_dice_outcome_maps_resolves_and_preserves_conservation(player: str
 
 
 def test_no_legal_move_after_resolution_can_be_passed_without_hanging() -> None:
-    state = _state_from_rows(
-        [
-            "RRRRRR",
-            "RRRRRR",
-            "......",
-            "......",
-            "......",
-            "......",
-        ],
-        reserves={RED: 0, BLUE: 12},
+    state = create_game()
+    state.turn_context = TurnContext(
+        dice=DiceRoll(column=1, row=1), target=target_from_roll(RED, 1, 1), legal_moves=[]
     )
-
-    rolled = roll_dice(state, rng=_rng_for_dice(1, 6))
+    rolled = state
     assert legal_destinations(rolled) == []
 
     passed = pass_turn(rolled)
@@ -345,7 +338,26 @@ def test_rejected_roll_and_pass_leave_input_state_unchanged() -> None:
     with pytest.raises(InvalidGameStateError):
         roll_dice(state, rng=lambda: object())
     assert state == original
-
     with pytest.raises(IllegalMoveError):
         pass_turn(state)
     assert state == original
+
+
+def test_last_reserve_placement_declares_winner_and_guards_actions() -> None:
+    state = _state_from_rows(
+        ["RRRRRR", "RRRRR.", "B.....", "......", "......", "......"],
+        reserves={RED: 1, BLUE: 11},
+    )
+    rolled = roll_dice(state, rng=_rng_for_dice(6, 1))
+    won = apply_placement(rolled, (5, 5))
+
+    assert won.winner == RED
+    assert won.current_player == RED
+    assert won.reserves[RED] == 0
+    assert won.turn == state.turn
+    assert won.turn_context == TurnContext()
+    for action in (roll_dice, pass_turn):
+        with pytest.raises(IllegalMoveError):
+            action(won)
+    with pytest.raises(IllegalMoveError):
+        apply_placement(won, (4, 4))
