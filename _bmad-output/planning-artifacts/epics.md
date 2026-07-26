@@ -114,7 +114,7 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 - **Epic 3: Complete Python Capture and Placement Rules** - Done (`_bmad-output/planning-artifacts/epics/epic-3-complete-python-capture-and-placement-rules.md`)
 - **Epic 4: Local Desktop Game** - Done (`_bmad-output/planning-artifacts/epics/epic-4-local-desktop-game.md`)
 - **Epic 5: Computer Opponents** - Done (`_bmad-output/planning-artifacts/epics/epic-5-computer-opponents.md`)
-- **Epic 6: Accessible Desktop Release Experience** - Not started (`_bmad-output/planning-artifacts/epics/epic-6-accessible-desktop-release-experience.md`)
+- **Epic 6: Accessible Desktop Release Experience** - Done (`_bmad-output/planning-artifacts/epics/epic-6-accessible-desktop-release-experience.md`)
 
 ## Epic 1: Browser-Accessible Strategic Reserve
 
@@ -378,7 +378,7 @@ As a player, I want dependable AI turns, so that unusual positions cannot freeze
 
 Keyboard and assistive-technology users can complete every journey, and the packaged application meets the visual and quality contract.
 
-### Story 6.1: Play the Board Entirely by Keyboard
+### Story 6.1: Play the Board Entirely by Keyboard [DONE]
 
 As a keyboard user, I want parity with pointer interaction, so that I can complete a game without a mouse.
 
@@ -390,7 +390,7 @@ As a keyboard user, I want parity with pointer interaction, so that I can comple
 
 **Given** pointer or keyboard focus, **when** a board square is targeted, **then** the orange outline is visible and distinguishable from target and legal-move states.
 
-### Story 6.2: Announce State and Meet Contrast Standards
+### Story 6.2: Announce State and Meet Contrast Standards [DONE]
 
 As an assistive-technology user, I want state changes announced and visible, so that I receive equivalent gameplay information.
 
@@ -400,7 +400,7 @@ As an assistive-technology user, I want state changes announced and visible, so 
 
 **Given** every normal, hover, focus, legal, target, and disabled state, **when** audited, **then** text and essential indicators meet WCAG AA contrast and visible-focus requirements.
 
-### Story 6.3: Validate the Release Journey
+### Story 6.3: Validate the Release Journey [DONE]
 
 As a player, I want a stable distributable game, so that installation and complete play work on a supported desktop.
 

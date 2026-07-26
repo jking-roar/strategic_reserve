@@ -24,9 +24,12 @@ class GameControls(tk.Frame):
                  on_quit: Callable[[], None]):
         super().__init__(parent, padx=12)
         self.status = tk.StringVar(value="")
+        self.announcement = tk.StringVar(value="")
         self.dice = tk.StringVar(value="Purple column: –   Green row: –")
         self.reserves = tk.StringVar(value="")
-        tk.Label(self, textvariable=self.status, font=("TkDefaultFont", 12, "bold")).pack()
+        self.status_label = tk.Label(self, textvariable=self.status, font=("TkDefaultFont", 12, "bold"),
+                                     takefocus=False, name="game_status")
+        self.status_label.pack()
         tk.Label(self, textvariable=self.dice).pack()
         tk.Label(self, textvariable=self.reserves).pack()
         self.roll = tk.Button(self, text="Roll Dice", command=on_roll)
@@ -35,10 +38,23 @@ class GameControls(tk.Frame):
         self.pass_button.pack(fill="x", pady=2)
         tk.Button(self, text="Quit", command=on_quit).pack(fill="x", pady=2)
 
+    def announce(self, text: str) -> None:
+        """Publish the same concise message visibly and through a stable Tk variable.
+
+        Named status text is exposed by native Tk accessibility bridges;
+        changing the variable also gives adapters a deterministic notification hook.
+        """
+        self.announcement.set(text)
+        self.status.set(text)
+
     def render(self, state: GameState, message: str = "", animating: bool = False,
                input_locked: bool = False) -> None:
         color = "Red" if state.current_player == RED else "Blue"
-        self.status.set(message or (f"{color} wins!" if state.winner else f"{color}'s turn"))
+        visible = message or (f"{color} wins!" if state.winner else f"{color}'s turn")
+        if message:
+            self.announce(visible)
+        else:
+            self.status.set(visible)
         dice = state.turn_context.dice
         if dice:
             self.dice.set(f"Purple column: {dice.column}   Green row: {dice.row}")
@@ -56,5 +72,7 @@ class GameOverView(tk.Frame):
         super().__init__(parent, padx=24, pady=24)
         name = "Red" if winner == RED else "Blue"
         tk.Label(self, text=f"{name} wins!", font=("TkDefaultFont", 20, "bold")).pack(pady=8)
-        tk.Button(self, text="New Game", command=on_new).pack(fill="x", pady=4)
-        tk.Button(self, text="Quit", command=on_quit).pack(fill="x", pady=4)
+        self.new_game = tk.Button(self, text="New Game", command=on_new)
+        self.new_game.pack(fill="x", pady=4)
+        self.quit = tk.Button(self, text="Quit", command=on_quit)
+        self.quit.pack(fill="x", pady=4)

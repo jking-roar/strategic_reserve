@@ -25,9 +25,14 @@ two-player/PvC Tk desktop client.
 - PvC configuration with Blue computer turns, generation-safe result handoff,
   and all 36 opponent dice outcomes in each completed advanced candidate.
 
-## Not implemented yet
+## Desktop release
 
-- Desktop release packaging and accessibility polish beyond keyboard operation.
+The build metadata produces a wheel and source distribution with the
+`strategic-reserve` console entry point. Python 3.11+ and Tk 8.6 on a graphical
+Windows, macOS, or Linux desktop are supported; there are no third-party runtime
+dependencies. Mark Steere is the game designer. Keyboard and screen-reader
+release evidence, contrast ratios, complete journey checks, and known limitations
+are maintained in [`release-checklist.md`](release-checklist.md).
 
 ## Commands
 
