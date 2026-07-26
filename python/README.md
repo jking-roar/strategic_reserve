@@ -21,16 +21,22 @@ python python/main.py
 Choose local two-player play or either computer difficulty. In computer mode,
 the human plays Red and the computer plays Blue; Blue's strategic search runs
 off the Tk event thread and human controls remain locked for its entire turn.
-Roll explicitly, then select a
-green legal square with the mouse or use Tab, arrow keys, and Enter/Space. The
-gold marker is the dice target. When no green square exists, use **Pass**. Quit
-or window close confirms before abandoning an unfinished game; Escape/No leaves
-the game unchanged.
-Focused or hovered squares have a dark-orange (`#C24100`) outline; legal squares have a labeled
-border treatment and the dice target has a dashed border and `T`. Escape clears
-the transient square description without changing selection or game state. Visible status text reports turns,
-dice and target coordinates, legal counts, captures, reserves, invalid actions,
-passes, and winners for assistive-technology access through native Tk bridges.
+Roll explicitly, then choose a legal square:
+
+- **Pointer:** select a green legal square.
+- **Keyboard:** use Tab to reach the board, arrow keys to move, and Enter or
+  Space to place.
+- **Pass:** when no green square exists, use **Pass**.
+- **Quit:** quitting or closing the window asks for confirmation; Escape or No
+  leaves the game unchanged.
+
+The gold marker is the dice target. Focused or hovered squares have a dark-orange
+(`#C24100`) outline; legal squares have a labeled border treatment, and the dice
+target has a dashed border and `T`. Escape clears the transient square
+description without changing selection or game state. Visible status text
+reports turns, dice and target coordinates, legal counts, captures, reserves,
+invalid actions, passes, and winners for assistive-technology access through
+native Tk bridges.
 
 ## Capture and placement rules
 
@@ -59,7 +65,7 @@ python -m pytest
 ## Layout
 
 - `game_engine/` core rules, state, validation, and group logic
-- `ai/` random and bounded strategic opponents (depends on `game_engine` only)
+- `ai/` rudimentary and bounded strategic opponents (depends on `game_engine` only)
 - `ui/` replaceable Tk presentation/controller (depends on `ai` and `game_engine`)
 - `tests/` engine, terminal lifecycle, headless UI-boundary, and architecture tests
 

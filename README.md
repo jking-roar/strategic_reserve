@@ -37,6 +37,9 @@ and the [release/accessibility checklist](docs/python/release-checklist.md).
 
 Strategic Reserve is a two-player board game played on a 6×6 grid, blending tactical positioning with dice-driven events. Each player starts with six checkers in reserve and attempts to be the first to place all reserve checkers onto the board.
 
+The game also begins with six checkers per player already arranged on the board;
+see [`rules.txt`](rules.txt) for the starting position and complete rules.
+
 On each turn, two dice select a target square (column and row). The result determines what happens next:
 
 - If the square is in an **enemy group**, that entire connected group is removed and returned to the opponent’s reserve.

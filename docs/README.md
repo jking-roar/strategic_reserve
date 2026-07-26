@@ -1,15 +1,26 @@
 # Strategic Reserve Documentation
 
-Last reviewed: 2026-07-25
+Last reviewed: 2026-07-26
 
-## Documentation map
+## Play
 
-- `docs/python/README.md` - Python core status, module layout, and test commands.
-- `docs/browser/README.md` - Static HTML edition layout, run/test commands, and behavior notes.
-- `_bmad-output/planning-artifacts/prds/prd-strategic_reserve-2026-07-25/prd.md` - Canonical PRD with implemented-vs-planned status.
+- [Project overview and rules](../README.md)
+- [Browser edition controls and manual checks](../site/README.md)
+- [Python desktop installation, controls, and limitations](../python/README.md)
+
+## Develop and release
+
+- [Browser edition structure and commands](browser/README.md)
+- [Python edition structure and commands](python/README.md)
+- [Python desktop release and accessibility checklist](python/release-checklist.md)
+
+## Product and design history
+
+- [Product requirements](../_bmad-output/planning-artifacts/prds/prd-strategic_reserve-2026-07-25/prd.md)
+- [Architecture spine](../_bmad-output/planning-artifacts/architecture/architecture-strategic_reserve-2026-07-25/ARCHITECTURE-SPINE.md)
+- [UX design](../_bmad-output/planning-artifacts/ux-designs/ux-strategic_reserve-2026-07-25/DESIGN.md)
 
 ## Current product status
 
 - Browser edition in `site/` is implemented and playable.
-- Python edition in `python/` currently provides an engine foundation and tests, not a complete desktop game loop.
-
+- Python edition in `python/` is a playable Tk desktop game with local PvP plus rudimentary and bounded advanced computer opponents.

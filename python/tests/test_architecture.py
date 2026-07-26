@@ -8,29 +8,11 @@ def test_layer_imports_are_valid() -> None:
     import ui  # noqa: F401
 
 
-def test_game_engine_has_no_reverse_dependencies() -> None:
-    root = Path(__file__).resolve().parents[1]
-    for file in (root / "game_engine").glob("*.py"):
-        source = file.read_text(encoding="utf-8")
-        assert "import ai" not in source
-        assert "from ai" not in source
-        assert "import ui" not in source
-        assert "from ui" not in source
-
-
-def test_ai_has_no_ui_dependency() -> None:
-    root = Path(__file__).resolve().parents[1]
-    for file in (root / "ai").glob("*.py"):
-        source = file.read_text(encoding="utf-8")
-        assert "import ui" not in source
-        assert "from ui" not in source
-
-
 def test_python_modules_follow_engine_ai_ui_dependency_direction() -> None:
     root = Path(__file__).resolve().parents[1]
     layer = {"game_engine": 0, "ai": 1, "ui": 2}
     for package, package_level in layer.items():
-        for file in (root / package).glob("*.py"):
+        for file in (root / package).rglob("*.py"):
             tree = ast.parse(file.read_text(encoding="utf-8"))
             imported = set()
             for node in ast.walk(tree):
