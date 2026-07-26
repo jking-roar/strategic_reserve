@@ -99,7 +99,12 @@ def _advance_turn(state: GameState, player: str) -> None:
 
 
 def target_from_roll(player: str, column: int, row: int) -> tuple[int, int]:
-    if column not in range(1, BOARD_SIZE + 1) or row not in range(1, BOARD_SIZE + 1):
+    if (
+        type(column) is not int
+        or type(row) is not int
+        or column not in range(1, BOARD_SIZE + 1)
+        or row not in range(1, BOARD_SIZE + 1)
+    ):
         raise InvalidGameStateError("Dice values must be integers from 1 through 6.")
     if player == RED:
         return (BOARD_SIZE - row, column - 1)
@@ -166,7 +171,7 @@ def apply_placement(state: GameState, destination: tuple[int, int]) -> GameState
     if (
         not isinstance(destination, tuple)
         or len(destination) != 2
-        or not all(isinstance(value, int) for value in destination)
+        or not all(type(value) is int for value in destination)
     ):
         raise IllegalMoveError("Destination must be a (row, col) tuple.")
 
@@ -191,4 +196,3 @@ def apply_placement(state: GameState, destination: tuple[int, int]) -> GameState
     _advance_turn(next_state, player)
     validate_game_state(next_state)
     return next_state
-

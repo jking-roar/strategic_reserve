@@ -28,8 +28,9 @@ def test_target_from_roll_maps_by_player_perspective() -> None:
 
 
 def test_target_from_roll_rejects_invalid_inputs_with_domain_error() -> None:
-    with pytest.raises(InvalidGameStateError):
-        target_from_roll(RED, 0, 2)
+    for column, row in ((0, 2), (7, 2), (1.0, 2), (1, "2"), (True, 2), (1, False)):
+        with pytest.raises(InvalidGameStateError):
+            target_from_roll(RED, column, row)  # type: ignore[arg-type]
 
     with pytest.raises(InvalidGameStateError):
         target_from_roll("GREEN", 1, 1)
@@ -89,6 +90,30 @@ def test_enemy_hit_removes_maximal_group_and_opens_all_empty_squares() -> None:
     legal = legal_destinations(rolled)
     assert len(legal) == 35
     assert all(rolled.board[row][col] is None for row, col in legal)
+    assert rolled.board[3][3] == RED
+
+
+def test_enemy_hit_preserves_diagonal_and_disconnected_enemy_checkers() -> None:
+    state = _state_from_rows(
+        [
+            "B.....",
+            ".BB...",
+            ".B....",
+            "...B..",
+            "......",
+            ".....B",
+        ]
+    )
+
+    rolled = roll_dice(state, rng=_rng_for_dice(2, 5))
+
+    assert rolled.board[1][1] is None
+    assert rolled.board[1][2] is None
+    assert rolled.board[2][1] is None
+    assert rolled.board[0][0] == BLUE
+    assert rolled.board[3][3] == BLUE
+    assert rolled.board[5][5] == BLUE
+    assert rolled.reserves[BLUE] == 9
 
 
 def test_friendly_hit_captures_adjacent_enemy_groups_once_and_constrains_placement() -> None:
@@ -118,6 +143,7 @@ def test_friendly_hit_captures_adjacent_enemy_groups_once_and_constrains_placeme
         (3, 3),
         (2, 4),
     }
+    assert len(legal_destinations(rolled)) == len(set(legal_destinations(rolled)))
 
 
 def test_empty_hit_allows_free_placement_without_capture_side_effects() -> None:
@@ -151,8 +177,10 @@ def test_empty_hit_allows_free_placement_without_capture_side_effects() -> None:
 def test_roll_dice_rejects_reroll_in_same_turn() -> None:
     state = create_game()
     rolled = roll_dice(state, rng=lambda: 0.2)
+    original = deepcopy(rolled)
     with pytest.raises(IllegalMoveError):
         roll_dice(rolled, rng=lambda: 0.3)
+    assert rolled == original
 
 
 def test_roll_dice_rejects_non_finite_or_non_numeric_rng() -> None:
@@ -175,6 +203,42 @@ def test_apply_placement_advances_turn_and_decrements_reserve() -> None:
     assert next_state.turn_context.dice is None
     assert next_state.turn_context.target is None
     assert next_state.turn_context.legal_moves == []
+
+
+@pytest.mark.parametrize("player", [RED, BLUE])
+def test_every_dice_outcome_maps_resolves_and_preserves_conservation(player: str) -> None:
+    state = _state_from_rows(
+        ["R.....", "......", "..B...", "......", "....R.", ".....B"],
+        current_player=player,
+    )
+
+    targets = set()
+    board_size = len(state.board)
+    for column in range(1, board_size + 1):
+        for row in range(1, board_size + 1):
+            rolled = roll_dice(state, rng=_rng_for_dice(column, row))
+            expected = target_from_roll(player, column, row)
+            targets.add(expected)
+            assert rolled.turn_context.target == expected
+            validate_game_state(rolled)
+            legal = legal_destinations(rolled)
+            assert len(legal) == len(set(legal))
+            assert all(0 <= r < board_size and 0 <= c < board_size for r, c in legal)
+            assert all(rolled.board[r][c] is None for r, c in legal)
+            for owner in (RED, BLUE):
+                on_board = sum(cell == owner for board_row in rolled.board for cell in board_row)
+                assert on_board + rolled.reserves[owner] == CHECKERS_PER_PLAYER
+
+            completed = apply_placement(rolled, legal[0]) if legal else pass_turn(rolled)
+            validate_game_state(completed)
+            assert completed.current_player != player
+            assert completed.turn == state.turn + 1
+            assert completed.turn_context == TurnContext()
+            for owner in (RED, BLUE):
+                on_board = sum(cell == owner for board_row in completed.board for cell in board_row)
+                assert on_board + completed.reserves[owner] == CHECKERS_PER_PLAYER
+
+    assert targets == {(row, col) for row in range(board_size) for col in range(board_size)}
 
 
 def test_no_legal_move_after_resolution_can_be_passed_without_hanging() -> None:
@@ -253,3 +317,35 @@ def test_apply_placement_rejects_illegal_and_keeps_state_unchanged() -> None:
         pass_turn(state)
     assert state == original
 
+
+@pytest.mark.parametrize("destination", [(True, 0), (0, False), [0, 0], (0.0, 0), (0, "0")])
+def test_apply_placement_rejects_non_integral_coordinates_atomically(destination: object) -> None:
+    rolled = roll_dice(create_game(), rng=_rng_for_dice(1, 1))
+    original = deepcopy(rolled)
+
+    with pytest.raises(IllegalMoveError):
+        apply_placement(rolled, destination)  # type: ignore[arg-type]
+
+    assert rolled == original
+
+
+def test_legal_destinations_returns_a_defensive_copy() -> None:
+    rolled = roll_dice(create_game(), rng=_rng_for_dice(1, 1))
+    returned = legal_destinations(rolled)
+    expected = list(returned)
+
+    returned.clear()
+
+    assert legal_destinations(rolled) == expected
+
+
+def test_rejected_roll_and_pass_leave_input_state_unchanged() -> None:
+    state = create_game()
+    original = deepcopy(state)
+    with pytest.raises(InvalidGameStateError):
+        roll_dice(state, rng=lambda: object())
+    assert state == original
+
+    with pytest.raises(IllegalMoveError):
+        pass_turn(state)
+    assert state == original

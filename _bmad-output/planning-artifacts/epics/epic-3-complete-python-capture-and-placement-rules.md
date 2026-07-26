@@ -1,9 +1,9 @@
 ---
 epic: 3
 title: Complete Python Capture and Placement Rules
-status: not-started
+status: done
 source: _bmad-output/planning-artifacts/epics.md
-lastReviewed: 2026-07-25
+lastReviewed: 2026-07-26
 ---
 
 # Epic 3: Complete Python Capture and Placement Rules
@@ -12,10 +12,10 @@ Players can resolve enemy, friendly, and empty targets with correct captures and
 
 ## Story Status
 
-- 3.1 - Not started
-- 3.2 - Not started
-- 3.3 - Not started
-- 3.4 - Not started
+- 3.1 - Done
+- 3.2 - Done
+- 3.3 - Done
+- 3.4 - Done
 
 ## Stories
 
@@ -60,4 +60,3 @@ As a player, I want every full turn to remain valid, so that long games cannot c
 **Given** each target category and boundary location, **when** automated scenario tests execute a full turn, **then** checker totals, reserve totals, occupancy, and active-player invariants hold.
 
 **Given** a failed action, **when** state is compared before and after, **then** no partial capture, placement, or turn transition remains.
-
