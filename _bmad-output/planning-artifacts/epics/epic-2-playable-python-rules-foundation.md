@@ -1,7 +1,7 @@
 ---
 epic: 2
 title: Playable Python Rules Foundation
-status: not-started
+status: done
 source: _bmad-output/planning-artifacts/epics.md
 lastReviewed: 2026-07-25
 ---
@@ -12,10 +12,10 @@ Players can create a valid game, roll dice, inspect groups, and place pieces thr
 
 ## Story Status
 
-- 2.1 - Not started
-- 2.2 - Not started
-- 2.3 - Not started
-- 2.4 - Not started
+- 2.1 - Done
+- 2.2 - Done
+- 2.3 - Done
+- 2.4 - Done
 
 ## Stories
 
@@ -60,4 +60,3 @@ As a player, I want a roll and placement to update one authoritative state, so t
 **Given** a legal empty destination, **when** the player places, **then** one checker moves from their reserve to that square and the turn advances exactly once.
 
 **Given** an illegal destination or empty reserve, **when** placement is attempted, **then** `IllegalMoveError` is raised and state remains unchanged.
-

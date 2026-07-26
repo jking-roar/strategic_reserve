@@ -10,11 +10,14 @@ Tkinter is the only GUI dependency. From the repository root, launch with:
 python python/main.py
 ```
 
-Choose **New Game** for local two-player play. Roll explicitly, then select a
+Choose local two-player play or either computer difficulty. In computer mode,
+the human plays Red and the computer plays Blue; Blue's strategic search runs
+off the Tk event thread and human controls remain locked for its entire turn.
+Roll explicitly, then select a
 green legal square with the mouse or use Tab, arrow keys, and Enter/Space. The
 gold marker is the dice target. When no green square exists, use **Pass**. Quit
 or window close confirms before abandoning an unfinished game; Escape/No leaves
-the game unchanged. Computer opponents are intentionally unavailable.
+the game unchanged.
 
 ## Capture and placement rules
 
@@ -43,8 +46,8 @@ python -m pytest
 ## Layout
 
 - `game_engine/` core rules, state, validation, and group logic
-- `ai/` AI integration boundary (depends on `game_engine` only)
-- `ui/` replaceable Tk presentation/controller (depends on `game_engine`)
+- `ai/` random and bounded strategic opponents (depends on `game_engine` only)
+- `ui/` replaceable Tk presentation/controller (depends on `ai` and `game_engine`)
 - `tests/` engine, terminal lifecycle, headless UI-boundary, and architecture tests
 
 The engine remains authoritative for board, reserves, player, turn context, and

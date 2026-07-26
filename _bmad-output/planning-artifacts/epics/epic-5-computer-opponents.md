@@ -1,7 +1,7 @@
 ---
 epic: 5
 title: Computer Opponents
-status: not-started
+status: done
 source: _bmad-output/planning-artifacts/epics.md
 lastReviewed: 2026-07-25
 ---
@@ -12,10 +12,10 @@ A solo player can choose between fast random play and bounded strategic play wit
 
 ## Story Status
 
-- 5.1 - Not started
-- 5.2 - Not started
-- 5.3 - Not started
-- 5.4 - Not started
+- 5.1 - Done
+- 5.2 - Done
+- 5.3 - Done
+- 5.4 - Done
 
 ## Stories
 
@@ -58,4 +58,3 @@ As a player, I want dependable AI turns, so that unusual positions cannot freeze
 **Given** a corpus covering full, sparse, capture-heavy, no-move, and near-win states, **when** both AIs run, **then** every result is legal or `None`, input states remain unchanged, and no run crashes or hangs.
 
 **Given** timed performance tests, **when** each difficulty runs under documented conditions, **then** rudimentary remains below one second and advanced remains below five seconds.
-
