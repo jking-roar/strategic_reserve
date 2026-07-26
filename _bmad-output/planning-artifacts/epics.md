@@ -106,6 +106,7 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 4. **Local Desktop Game** — deliver a complete, visible two-player Python game loop.
 5. **Computer Opponents** — add safe rudimentary and advanced Python AI play.
 6. **Accessible Desktop Release Experience** — complete keyboard, assistive, visual, and release-quality validation for the Python edition.
+7. **Remove Unreachable No-Legal-Move Flow** — encode the rules invariant that every active roll has a legal placement and remove pass-only branches from both editions.
 
 ## Delivery Status (as of 2026-07-26)
 
@@ -115,6 +116,7 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 - **Epic 4: Local Desktop Game** - Done (`_bmad-output/planning-artifacts/epics/epic-4-local-desktop-game.md`)
 - **Epic 5: Computer Opponents** - Done (`_bmad-output/planning-artifacts/epics/epic-5-computer-opponents.md`)
 - **Epic 6: Accessible Desktop Release Experience** - Done (`_bmad-output/planning-artifacts/epics/epic-6-accessible-desktop-release-experience.md`)
+- **Epic 7: Remove Unreachable No-Legal-Move Flow** - Backlog (`_bmad-output/planning-artifacts/epics/epic-7-remove-unreachable-no-legal-move-flow.md`)
 
 ## Epic 1: Browser-Accessible Strategic Reserve
 
@@ -411,3 +413,47 @@ As a player, I want a stable distributable game, so that installation and comple
 **Given** automated and manual release checks, **when** PvP and both PvC difficulties are played through start, captures, win, restart, and quit, **then** all requirements in the coverage map pass with no critical defects.
 
 **Given** the release artifact, **when** source and documentation are inspected, **then** game attribution, controls, test commands, supported environment, and known limitations are present.
+
+## Epic 7: Remove Unreachable No-Legal-Move Flow
+
+Players and maintainers encounter only states permitted by the official rules, without pass controls or defensive AI branches for an unreachable no-placement condition.
+
+### Story 7.1: Encode the Legal-Placement Invariant
+
+As a maintainer, I want every active resolved roll to contain at least one legal destination, so that impossible states fail at the engine boundary instead of entering a pass flow.
+
+**Acceptance Criteria:**
+
+**Given** a valid non-terminal state and any of the 36 rolls, **when** the roll resolves, **then** at least one legal placement is produced.
+
+**Given** conservation of twelve checkers per player on a 36-square board, **when** any valid state is inspected, **then** the invariant is documented and tested that at most 24 squares are occupied and at least 12 are empty.
+
+**Given** an empty or enemy target, **when** the rules resolve the target, **then** an existing or newly emptied square is available; **given** a friendly target, **then** the maximal friendly group has an orthogonal boundary containing an empty square or an enemy checker that is removed.
+
+**Given** a non-terminal resolved state with an empty legal-move list, **when** it is validated, **then** it is rejected as invalid rather than accepted as passable.
+
+### Story 7.2: Remove Pass Handling from Both Game Engines
+
+As a maintainer, I want the Python and browser engines to model only reachable turn transitions, so that their APIs and state machines remain small and consistent.
+
+**Acceptance Criteria:**
+
+**Given** the Python engine, **when** cleanup is complete, **then** `pass_turn`, no-placement exceptions, and exports/tests used solely by that path are removed while roll, placement, capture, conservation, and victory behavior remain unchanged.
+
+**Given** the browser engine, **when** cleanup is complete, **then** `await-pass`, `pass`, no-placement messages, and synthetic pass tests are removed, and every resolved active roll enters placement.
+
+**Given** any active player, valid state, and dice pair, **when** the Python and browser engines resolve equivalent positions, **then** both produce a non-empty legal set containing only empty in-bounds squares.
+
+### Story 7.3: Remove Pass Handling from AI, UI, and Documentation
+
+As a player, I want every turn to proceed directly from rolling to placing, so that the interface does not describe or expose an impossible action.
+
+**Acceptance Criteria:**
+
+**Given** either AI difficulty, **when** it receives a valid resolved active state, **then** it returns a legal coordinate; nullable no-move branches and related recovery behavior are removed without weakening deadline or immutability guarantees.
+
+**Given** either browser or desktop UI, **when** a roll resolves, **then** no pass control, pass announcement, acknowledgment focus path, or automatic AI pass branch exists.
+
+**Given** project requirements, READMEs, accessibility text, implementation specs, and tests, **when** the cleanup is reviewed, **then** normative claims that no-legal-play is supported are removed or replaced by the proven invariant, while historical completed artifacts are clearly retained as historical or updated consistently.
+
+**Given** the complete automated suites, **when** they run after cleanup, **then** all engine, AI, UI, static, architecture, and release-journey checks pass with new invariant coverage in place.
