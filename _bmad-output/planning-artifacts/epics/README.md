@@ -10,6 +10,7 @@ This folder breaks out `_bmad-output/planning-artifacts/epics.md` into one file 
 - Epic 4 - Done
 - Epic 5 - Done
 - Epic 6 - Done
+- Epic 7 - Backlog
 
 ## Files
 
@@ -19,3 +20,4 @@ This folder breaks out `_bmad-output/planning-artifacts/epics.md` into one file 
 - `epic-4-local-desktop-game.md`
 - `epic-5-computer-opponents.md`
 - `epic-6-accessible-desktop-release-experience.md`
+- `epic-7-remove-unreachable-no-legal-move-flow.md`
