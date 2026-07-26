@@ -9,7 +9,7 @@ This folder breaks out `_bmad-output/planning-artifacts/epics.md` into one file 
 - Epic 3 - Done
 - Epic 4 - Done
 - Epic 5 - Done
-- Epic 6 - Not started
+- Epic 6 - Done
 
 ## Files
 

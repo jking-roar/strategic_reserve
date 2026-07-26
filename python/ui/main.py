@@ -7,10 +7,57 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 
 from ai import get_move
-from game_engine import BLUE, GameState, StrategicReserveError, apply_placement, create_game, pass_turn, roll_dice
+from game_engine import BLUE, RED, GameState, StrategicReserveError, apply_placement, create_game, pass_turn, roll_dice
 
 from .board_view import BoardView
 from .controls import GameControls, GameOverView, MenuView
+
+
+def player_name(player: str) -> str:
+    if player == RED:
+        return "Red"
+    if player == BLUE:
+        return "Blue"
+    raise ValueError(f"Unknown player: {player!r}")
+
+
+def transition_summary(before: GameState, after: GameState, event: str) -> str:
+    """Describe an authoritative transition without owning any game state."""
+    actor = player_name(before.current_player)
+    captured = {
+        color: max(0, after.reserves[color] - before.reserves[color])
+        for color in before.reserves
+    }
+    details: list[str] = []
+    if event == "roll" and after.turn_context.dice and after.turn_context.target:
+        dice, (row, col) = after.turn_context.dice, after.turn_context.target
+        details.append(
+            f"{actor}'s turn. Purple column {dice.column}, Green row {dice.row}. "
+            f"Target row {row + 1}, column {col + 1}."
+        )
+        details.append(
+            f"{len(after.turn_context.legal_moves)} legal placements."
+            if after.turn_context.legal_moves else "No legal placement; use Pass."
+        )
+        for color, count in captured.items():
+            if count:
+                details.append(f"Captured {count} {player_name(color)} checker{'s' if count != 1 else ''}; returned to reserve.")
+        if any(captured.values()):
+            details.append(f"Reserves: Red {after.reserves['RED']}, Blue {after.reserves['BLUE']}.")
+    elif event == "pass":
+        details.append(f"{actor} passed. {player_name(after.current_player)}'s turn.")
+    elif event == "placement":
+        details.append(f"{actor} placed a checker.")
+        for color, count in captured.items():
+            if count:
+                details.append(f"Captured {count} {player_name(color)} checker{'s' if count != 1 else ''}; returned to reserve.")
+        details.append(
+            f"Reserves: Red {after.reserves['RED']}, Blue {after.reserves['BLUE']}."
+        )
+        details.append(
+            f"{player_name(after.winner)} wins!" if after.winner else f"{player_name(after.current_player)}'s turn."
+        )
+    return " ".join(details)
 
 
 class QuitDialog(tk.Toplevel):
@@ -54,6 +101,7 @@ class GameController:
         self.controls: GameControls | None = None
         self.game_over: GameOverView | None = None
         self.quit_dialog: QuitDialog | None = None
+        self._status_message = ""
         self.root.title("Strategic Reserve")
         self.root.protocol("WM_DELETE_WINDOW", self.request_quit)
         self.show_menu()
@@ -93,17 +141,42 @@ class GameController:
         self.difficulty = difficulty
         self.state = create_game()
         frame = self._replace()
-        self.board = BoardView(frame, self.activate_square)
+        self.board = BoardView(
+            frame, self.activate_square, self.describe_square,
+            self.cancel_selection, self.restore_status,
+        )
         self.board.pack(side="left", padx=12, pady=12)
-        self.board.bind("<<BoardFocusChanged>>", lambda _event: self.refresh())
         self.controls = GameControls(frame, self.roll, self.pass_action, self.request_quit)
         self.controls.pack(side="right", fill="y", pady=12)
         self.refresh()
+        if hasattr(self.root, "after_idle"):
+            self.root.after_idle(self.board.focus_set)
+
+    def describe_square(self, text: str) -> None:
+        if self.controls is not None:
+            self.controls.announce(text)
+
+    def restore_status(self) -> None:
+        if self.controls is not None:
+            self.controls.announce(self._status_message)
+
+    def cancel_selection(self) -> None:
+        """Cancel transient board targeting without changing engine state."""
+        if self.board is not None:
+            self.board.hovered = None
+        self.restore_status()
 
     def refresh(self, message: str = "") -> None:
         if self.state is None or self.board is None or self.controls is None:
             return
         locked = self._human_locked()
+        if message:
+            self._status_message = message
+        elif not getattr(self, "_status_message", "") or self._status_message.startswith("Square row"):
+            self._status_message = (
+                f"{player_name(self.state.winner)} wins!" if self.state.winner
+                else f"{player_name(self.state.current_player)}'s turn"
+            )
         self.board.render(self.state, enabled=not locked and not self.animating and self.state.winner is None)
         self.controls.render(self.state, message, self.animating, input_locked=locked)
         if self.state.winner is not None and self.game_over is None:
@@ -111,6 +184,8 @@ class GameController:
                 self.container, self.state.winner, self.show_menu, self.request_quit
             )
             self.game_over.place(relx=.5, rely=.5, anchor="center")
+            if hasattr(self.root, "after_idle") and hasattr(self.game_over, "new_game"):
+                self.root.after_idle(self.game_over.new_game.focus_force)
 
     def roll(self) -> None:
         if (self.state is None or self.animating or self._human_locked() or self.state.winner is not None
@@ -131,8 +206,9 @@ class GameController:
             return
         try:
             assert self.state is not None
+            before = self.state
             self.state = roll_dice(self.state, self.rng)
-            message = "Choose a green square." if self.state.turn_context.legal_moves else "No legal move; pass the turn."
+            message = transition_summary(before, self.state, "roll")
         except StrategicReserveError as exc:
             message = str(exc)
         self.animating = False
@@ -142,8 +218,9 @@ class GameController:
         if self.state is None or self.animating or self._human_locked() or self.state.winner is not None:
             return
         try:
+            before = self.state
             self.state = apply_placement(self.state, destination)
-            self.refresh()
+            self.refresh(transition_summary(before, self.state, "placement"))
             self._start_ai_turn()
         except StrategicReserveError as exc:
             self.refresh(f"Illegal or stale square: {exc}")
@@ -152,8 +229,9 @@ class GameController:
         if self.state is None or self.animating or self._human_locked():
             return
         try:
+            before = self.state
             self.state = pass_turn(self.state)
-            self.refresh()
+            self.refresh(transition_summary(before, self.state, "pass"))
             self._start_ai_turn()
         except StrategicReserveError as exc:
             self.refresh(str(exc))
@@ -198,16 +276,18 @@ class GameController:
         self.ai_busy = True
         token = self.generation
         try:
+            before = self.state
             self.state = roll_dice(self.state, self.rng)
         except StrategicReserveError as exc:
             self.ai_busy = False
             self.refresh(str(exc))
             return
-        self.refresh("Blue is thinking…")
+        self.refresh(transition_summary(before, self.state, "roll") + " Blue is thinking.")
         if not self.state.turn_context.legal_moves:
+            before = self.state
             self.state = pass_turn(self.state)
             self.ai_busy = False
-            self.refresh()
+            self.refresh(transition_summary(before, self.state, "pass"))
             return
         snapshot = self.state
         try:
@@ -230,8 +310,9 @@ class GameController:
             move = future.result()
             if move is None and self.state.turn_context.legal_moves:
                 raise ValueError("computer returned no move while legal moves exist")
+            before = self.state
             self.state = pass_turn(self.state) if move is None else apply_placement(self.state, move)
-            message = ""
+            message = transition_summary(before, self.state, "pass" if move is None else "placement")
         except Exception as exc:
             self._ai_future = None
             self._recover_ai_turn(exc)
@@ -245,8 +326,13 @@ class GameController:
         assert self.state is not None
         try:
             legal = self.state.turn_context.legal_moves
+            before = self.state
             self.state = apply_placement(self.state, legal[0]) if legal else pass_turn(self.state)
-            message = f"Computer strategy failed; a safe fallback was used: {error}"
+            event = "placement" if legal else "pass"
+            message = (
+                f"Computer strategy failed; a safe fallback was used: {error}. "
+                + transition_summary(before, self.state, event)
+            )
         except StrategicReserveError as recovery_error:
             # A corrupt engine state is not safely recoverable; return to configuration
             # rather than leave an input-locked Blue turn on screen.
@@ -258,6 +344,12 @@ class GameController:
 
 
 def run() -> None:
-    root = tk.Tk()
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        raise SystemExit(
+            "Strategic Reserve needs Tk 8.6 and a graphical desktop/display. "
+            "Install your OS Tk package (often python3-tk) and retry from a desktop session."
+        ) from None
     GameController(root)
     root.mainloop()

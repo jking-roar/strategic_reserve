@@ -1,6 +1,14 @@
 # Strategic Reserve Python Desktop Game
 
-Python gameplay foundation for Strategic Reserve.
+Accessible local desktop edition of **Strategic Reserve**, a game by **Mark Steere**.
+
+## Supported environment and installation
+
+Python 3.11+ with Tk 8.6 is supported on graphical Windows, macOS, and Linux
+desktops. From the repository root, run `python -m build python/`, install the
+wheel from `python/dist/` in a virtual environment, then launch the installed
+`strategic-reserve` command. There are no third-party runtime dependencies.
+Linux Python installations may require the OS package `python3-tk`.
 
 ## Play locally
 
@@ -18,6 +26,11 @@ green legal square with the mouse or use Tab, arrow keys, and Enter/Space. The
 gold marker is the dice target. When no green square exists, use **Pass**. Quit
 or window close confirms before abandoning an unfinished game; Escape/No leaves
 the game unchanged.
+Focused or hovered squares have a dark-orange (`#C24100`) outline; legal squares have a labeled
+border treatment and the dice target has a dashed border and `T`. Escape clears
+the transient square description without changing selection or game state. Visible status text reports turns,
+dice and target coordinates, legal counts, captures, reserves, invalid actions,
+passes, and winners for assistive-technology access through native Tk bridges.
 
 ## Capture and placement rules
 
@@ -53,3 +66,10 @@ python -m pytest
 The engine remains authoritative for board, reserves, player, turn context, and
 winner. Automated tests import and exercise controller boundaries without opening
 a window, so they do not require `$DISPLAY`; interactive smoke testing does.
+
+## Known limitations
+
+The application is desktop-only and requires a graphical display plus a Python
+build containing Tk. Native screen-reader exposure varies by OS/Tk bridge and is
+validated with the manual release checklist. Network play, mobile support,
+save/load, replay, tutorials, audio, themes, and custom board sizes are not included.

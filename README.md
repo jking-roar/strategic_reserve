@@ -12,6 +12,23 @@ advanced computer opponents (the computer always plays Blue).
 
 Keyboard players can Tab through controls, use arrow keys on the board, and press Enter or Space to place. Every human roll is user-initiated, and a turn with no legal placement waits for explicit acknowledgment.
 
+## Install the desktop edition
+
+The supported runtime is Python 3.11 or newer with Tk 8.6 on a graphical Windows,
+macOS, or Linux desktop. Build and install the distributable entry point with:
+
+```sh
+python -m pip install build
+python -m build python/
+python -m pip install python/dist/strategic_reserve_python-0.1.0-py3-none-any.whl
+strategic-reserve
+```
+
+Tkinter ships with standard Windows/macOS Python installers; Linux users may
+need their distribution's `python3-tk` package. The game has no third-party
+runtime dependencies. See [desktop controls and limitations](python/README.md)
+and the [release/accessibility checklist](docs/python/release-checklist.md).
+
 ## Game Attribution
 
 **Strategic Reserve** is a game by **Mark Steere**.
