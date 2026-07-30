@@ -62,6 +62,7 @@ class BoardView(tk.Canvas):
         self.has_focus = False
         self.enabled = True
         self._state: GameState | None = None
+        self._transition_frame: tuple[tuple[tuple[int, int, str], ...], tuple[int, int] | None, float] | None = None
         self.bind("<Button-1>", self._click)
         self.bind("<Motion>", self._motion)
         self.bind("<Leave>", self._leave)
@@ -109,6 +110,45 @@ class BoardView(tk.Canvas):
             x0, y0 = col * pitch, row * pitch
             self.create_rectangle(x0 + 2, y0 + 2, x0 + size - 2, y0 + size - 2,
                                   outline=FOCUS, width=3, tags=("interaction-cue",))
+        if self._transition_frame is not None:
+            self._draw_transition(*self._transition_frame)
+
+
+    def show_transition(self, removed: tuple[tuple[int, int, str], ...],
+                        target: tuple[int, int] | None, progress: float) -> None:
+        """Draw one transient animation frame over the authoritative board."""
+        self._transition_frame = (removed, target, progress)
+        self._draw_transition(removed, target, progress)
+
+    def clear_transition(self) -> None:
+        """Remove transient effects without disturbing the rendered game state."""
+        self._transition_frame = None
+        self.delete("transition-effect")
+
+    def _draw_transition(self, removed: tuple[tuple[int, int, str], ...],
+                         target: tuple[int, int] | None, progress: float) -> None:
+        self.delete("transition-effect")
+        progress = max(0.0, min(1.0, progress))
+        size, pitch = self.cell_size, self.pitch
+        if target is not None:
+            row, col = target
+            x0, y0 = col * pitch, row * pitch
+            inset = 3 + int(9 * progress)
+            width = max(1, 6 - int(4 * progress))
+            self.create_rectangle(
+                x0 + inset, y0 + inset, x0 + size - inset, y0 + size - inset,
+                outline=TARGET_OUTLINE, width=width, dash=(5, 3),
+                tags=("target-pulse", "transition-effect"),
+            )
+        shrink = int(size * (1 / 6 + progress / 4))
+        stipple = "gray25" if progress < .5 else "gray75"
+        for row, col, owner in removed:
+            x0, y0 = col * pitch, row * pitch
+            self.create_oval(
+                x0 + shrink, y0 + shrink, x0 + size - shrink, y0 + size - shrink,
+                fill=PIECE[owner], outline="#000000", width=1, stipple=stipple,
+                tags=("removed-chip", "transition-effect"),
+            )
 
     def _coordinate_at(self, x: int, y: int) -> tuple[int, int] | None:
         col, row = x // self.pitch, y // self.pitch

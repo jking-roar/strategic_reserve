@@ -77,9 +77,13 @@ class _Root:
 class _Board:
     def __init__(self):
         self.renders = []
+        self.transitions = []
 
     def render(self, state, enabled=True):
         self.renders.append((state, enabled))
+
+    def show_transition(self, removed, target, progress):
+        self.transitions.append((removed, target, progress))
 
 
 class _Value:
@@ -220,6 +224,39 @@ def test_stale_ai_result_cannot_mutate_replaced_session() -> None:
     controller._poll_ai(future, controller.generation - 1, snapshot)
     assert controller.state is snapshot
     assert controller.ai_busy
+
+
+def test_computer_roll_cycles_dice_before_strategy_submission() -> None:
+    red_roll = roll_dice(create_game(), lambda: 0.0)
+    blue_turn = apply_placement(red_roll, red_roll.turn_context.legal_moves[0])
+    controller = _controller(blue_turn)
+    controller.mode = "pvc"
+    controller.difficulty = "rudimentary"
+    controller.ai_busy = False
+    controller.animation_steps = 1
+    controller._executor = _ImmediateExecutor()
+
+    controller._start_ai_turn()
+
+    assert controller.animating and controller.ai_busy
+    assert controller.state.turn_context.dice is None
+    controller.root.after_calls.pop(0)()
+    assert controller.state.turn_context.dice == DiceRoll(1, 1)
+    assert controller.board.transitions
+
+
+def test_stale_transition_frame_does_not_paint_or_complete() -> None:
+    controller = _controller()
+    completed = []
+    controller.animating = True
+
+    controller._effect_tick(
+        controller.generation - 1, ((0, 0, RED),), (1, 1), 0,
+        lambda: completed.append(True),
+    )
+
+    assert not controller.board.transitions
+    assert not completed
 
 
 def test_submission_and_arbitrary_worker_failures_unlock_controller() -> None:

@@ -109,6 +109,19 @@ def test_disabled_legal_target_overlap_retains_each_non_color_cue(root) -> None:
     assert not activated
 
 
+def test_transition_frame_pulses_target_and_ghosts_all_removed_chips(root) -> None:
+    board = BoardView(root, lambda _coordinate: None)
+    board.pack()
+    board.render(create_game())
+
+    board.show_transition(((0, 0, RED), (1, 1, RED)), (2, 3), .5)
+    root.update()
+
+    assert len(board.find_withtag("target-pulse")) == 1
+    assert len(board.find_withtag("removed-chip")) == 2
+    assert len(board.find_withtag("transition-effect")) == 3
+
+
 def test_quit_dialog_escape_is_no_and_terminal_restart_focus(root) -> None:
     decisions = []
     dialog = QuitDialog(root, lambda: decisions.append("yes"), lambda: decisions.append("no"))
