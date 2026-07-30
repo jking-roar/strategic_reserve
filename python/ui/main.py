@@ -210,7 +210,7 @@ class GameController:
             self.animating = False
             if self.board is not None and hasattr(self.board, "clear_transition"):
                 self.board.clear_transition()
-            self.refresh()
+            self.refresh(self._status_message)
             if on_complete is not None:
                 on_complete()
             return
