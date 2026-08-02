@@ -133,7 +133,7 @@ class GameController:
             )
         self.board.render(self.state, enabled=not locked and not self.animating and self.state.winner is None)
         self.controls.render(self.state, message, self.animating, input_locked=locked)
-        if self.state.winner is not None and self.game_over is None:
+        if self.state.winner is not None and self.game_over is None and not self.animating:
             self.game_over = GameOverView(
                 self.container, self.state.winner, self.show_menu, self.request_quit
             )
@@ -145,37 +145,90 @@ class GameController:
         if (self.state is None or self.animating or self._human_locked() or self.state.winner is not None
                 or self.state.turn_context.dice is not None):
             return
+        self._begin_roll("Rolling…")
+
+    def _begin_roll(self, message: str, on_complete=None) -> None:
+        """Animate, resolve, and present a roll on Tk's event loop."""
         self.animating = True
         token = self.generation
-        self.refresh("Rolling…")
-        self._animation_tick(token, self.animation_steps)
+        self.refresh(message)
+        self._animation_tick(token, self.animation_steps, on_complete)
 
-    def _animation_tick(self, token: int, remaining: int) -> None:
+    def _animation_tick(self, token: int, remaining: int, on_complete=None) -> None:
         if token != self.generation or not self.animating:
             return
         if remaining > 0:
             if self.controls:
                 self.controls.dice.set(f"Purple column: {random.randint(1, 6)}   Green row: {random.randint(1, 6)}")
-            self.root.after(self.animation_ms, lambda: self._animation_tick(token, remaining - 1))
+            self.root.after(
+                self.animation_ms,
+                lambda: self._animation_tick(token, remaining - 1, on_complete),
+            )
             return
         try:
             assert self.state is not None
             before = self.state
-            self.state = roll_dice(self.state, self.rng)
-            message = transition_summary(before, self.state, "roll")
+            after = roll_dice(self.state, self.rng)
+            message = transition_summary(before, after, "roll")
         except StrategicReserveError as exc:
-            message = str(exc)
-        self.animating = False
+            self.animating = False
+            self.ai_busy = False
+            self._status_message = str(exc)
+            self.show_menu()
+            return
+        self._present_transition(before, after, message, token, on_complete)
+
+    def _present_transition(self, before: GameState, after: GameState, message: str,
+                            token: int | None = None, on_complete=None) -> None:
+        """Publish resolved state, then paint non-authoritative transition frames."""
+        token = self.generation if token is None else token
+        if token != self.generation:
+            return
+        self.state = after
+        removed = tuple(
+            (row, col, owner)
+            for row, old_row in enumerate(before.board)
+            for col, owner in enumerate(old_row)
+            if owner is not None and after.board[row][col] != owner
+        )
+        target = after.turn_context.target
+        if self.animation_steps <= 0:
+            self.animating = False
+            self.refresh(message)
+            if on_complete is not None:
+                on_complete()
+            return
+        self.animating = True
         self.refresh(message)
+        self._effect_tick(token, removed, target, 0, on_complete)
+
+    def _effect_tick(self, token: int, removed: tuple[tuple[int, int, str], ...],
+                     target: tuple[int, int] | None, step: int, on_complete=None) -> None:
+        if token != self.generation or not self.animating:
+            return
+        if step >= self.animation_steps:
+            self.animating = False
+            if self.board is not None and hasattr(self.board, "clear_transition"):
+                self.board.clear_transition()
+            self.refresh(self._status_message)
+            if on_complete is not None:
+                on_complete()
+            return
+        if self.board is not None and hasattr(self.board, "show_transition"):
+            self.board.show_transition(removed, target, step / max(1, self.animation_steps - 1))
+        self.root.after(
+            self.animation_ms,
+            lambda: self._effect_tick(token, removed, target, step + 1, on_complete),
+        )
 
     def activate_square(self, destination: tuple[int, int]) -> None:
         if self.state is None or self.animating or self._human_locked() or self.state.winner is not None:
             return
         try:
             before = self.state
-            self.state = apply_placement(self.state, destination)
-            self.refresh(transition_summary(before, self.state, "placement"))
-            self._start_ai_turn()
+            after = apply_placement(self.state, destination)
+            message = transition_summary(before, after, "placement")
+            self._present_transition(before, after, message, on_complete=self._start_ai_turn)
         except StrategicReserveError as exc:
             self.refresh(f"Illegal or stale square: {exc}")
 
@@ -217,16 +270,15 @@ class GameController:
                 or getattr(self, "ai_busy", False)):
             return
         self.ai_busy = True
-        token = self.generation
-        try:
-            before = self.state
-            self.state = roll_dice(self.state, self.rng)
-        except StrategicReserveError as exc:
-            self.ai_busy = False
-            self.refresh(str(exc))
+        self._begin_roll("Blue is rolling…", self._submit_ai_move)
+
+    def _submit_ai_move(self) -> None:
+        """Submit strategy selection after Blue's resolved roll is presented."""
+        if self.state is None or not self.ai_busy:
             return
-        self.refresh(transition_summary(before, self.state, "roll") + " Blue is thinking.")
+        token = self.generation
         snapshot = self.state
+        self.refresh(f"{self._status_message} Blue is thinking.")
         try:
             future = self._executor.submit(get_move, snapshot, BLUE, self.difficulty)
         except Exception as exc:
@@ -246,15 +298,21 @@ class GameController:
         try:
             move = future.result()
             before = self.state
-            self.state = apply_placement(self.state, move)
-            message = transition_summary(before, self.state, "placement")
+            after = apply_placement(self.state, move)
+            message = transition_summary(before, after, "placement")
         except Exception as exc:
             self._ai_future = None
             self._recover_ai_turn(exc)
             return
         self._ai_future = None
+        self._present_transition(
+            before, after, message, token,
+            on_complete=self._finish_ai_turn,
+        )
+
+    def _finish_ai_turn(self) -> None:
         self.ai_busy = False
-        self.refresh(message)
+        self.refresh(self._status_message)
 
     def _recover_ai_turn(self, error: Exception) -> None:
         """Finish a failed computer turn with a validated deterministic fallback."""
@@ -262,11 +320,11 @@ class GameController:
         try:
             legal = self.state.turn_context.legal_moves
             before = self.state
-            self.state = apply_placement(self.state, legal[0])
+            after = apply_placement(self.state, legal[0])
             event = "placement"
             message = (
                 f"Computer strategy failed; a safe fallback was used: {error}. "
-                + transition_summary(before, self.state, event)
+                + transition_summary(before, after, event)
             )
         except (StrategicReserveError, IndexError, TypeError):
             # A corrupt engine state is not safely recoverable; return to configuration
@@ -274,8 +332,10 @@ class GameController:
             self.ai_busy = False
             self.show_menu()
             return
-        self.ai_busy = False
-        self.refresh(message)
+        self._present_transition(
+            before, after, message,
+            on_complete=self._finish_ai_turn,
+        )
 
 
 def run() -> None:
