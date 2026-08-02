@@ -20,7 +20,7 @@ two-player/PvC Tk desktop client.
 - Game-state invariants via `validate_game_state`.
 - Orthogonal group detection via `group_at` and `groups_for_color`.
 - Dice roll generation and player-perspective target mapping via `roll_dice` and `target_from_roll`.
-- Complete capture/placement/pass flow and engine-owned terminal winner lifecycle.
+- Complete capture/placement flow and engine-owned terminal winner lifecycle.
 - Non-blocking dice animation, legal-square activation, restart, and protected quit.
 - PvC configuration with Blue computer turns, generation-safe result handoff,
   and all 36 opponent dice outcomes in each completed advanced candidate.
