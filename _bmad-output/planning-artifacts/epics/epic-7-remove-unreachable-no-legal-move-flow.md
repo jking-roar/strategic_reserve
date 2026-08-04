@@ -1,9 +1,9 @@
 ---
 epic: 7
 title: Remove Unreachable No-Legal-Move Flow
-status: backlog
+status: done
 source: _bmad-output/planning-artifacts/epics.md
-lastReviewed: 2026-07-26
+lastReviewed: 2026-08-03
 ---
 
 # Epic 7: Remove Unreachable No-Legal-Move Flow
@@ -24,9 +24,9 @@ The existing no-legal-move/pass behavior handles invalid or manually fabricated 
 
 ## Story Status
 
-- 7.1 - Backlog
-- 7.2 - Backlog
-- 7.3 - Backlog
+- 7.1 - Done
+- 7.2 - Done
+- 7.3 - Done
 
 ## Stories
 

@@ -116,7 +116,7 @@ This progression plan decomposes Strategic Reserve into independently deliverabl
 - **Epic 4: Local Desktop Game** - Done (`_bmad-output/planning-artifacts/epics/epic-4-local-desktop-game.md`)
 - **Epic 5: Computer Opponents** - Done (`_bmad-output/planning-artifacts/epics/epic-5-computer-opponents.md`)
 - **Epic 6: Accessible Desktop Release Experience** - Done (`_bmad-output/planning-artifacts/epics/epic-6-accessible-desktop-release-experience.md`)
-- **Epic 7: Remove Unreachable No-Legal-Move Flow** - Backlog (`_bmad-output/planning-artifacts/epics/epic-7-remove-unreachable-no-legal-move-flow.md`)
+- **Epic 7: Remove Unreachable No-Legal-Move Flow** - Done (`_bmad-output/planning-artifacts/epics/epic-7-remove-unreachable-no-legal-move-flow.md`)
 
 ## Epic 1: Browser-Accessible Strategic Reserve
 

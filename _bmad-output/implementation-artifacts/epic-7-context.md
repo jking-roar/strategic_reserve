@@ -2,6 +2,8 @@
 
 <!-- Generated from planning artifacts. Regenerate with compile-epic-context if planning docs change. -->
 
+## Status: **COMPLETE** (as of 2026-08-03)
+
 ## Goal
 
 Ensure players and maintainers encounter only states permitted by the official rules by proving that every valid, non-terminal resolved roll has a legal placement, rejecting fabricated states that violate that invariant, and removing the pass/no-placement flow from both game editions, their AI and UI layers, tests, and current documentation. This keeps turn progression direct and makes the Python and browser implementations consistent without preserving defensive behavior for unreachable positions.
